@@ -29,5 +29,17 @@ def matchAllSites(data, status):
                 
     return True
 
+def matchSite(data, site, status):
+    #TODO: check status in range
+    nSites = len(data['columnNames'])
+    for column in range(0, nSites):
+        for row in range(0, nSites):
+            if (column != row and (column == site or row == site)):
+                if (not matchTopHalfCell(data, row, column, status) or
+                    not matchTopHalfCell(data, row, column, status)):
+                    return False
+                
+    return True
+
 def matchSiteAllStatus(data, site, status):
     return False
