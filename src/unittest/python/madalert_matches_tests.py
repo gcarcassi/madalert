@@ -15,3 +15,10 @@ class HelloWorldTest(unittest.TestCase):
         self.assertEquals(14, len(data["columnNames"]))
         result = matchAllSites(data, 3)
         self.assertEquals(result, True)
+
+        data = loadJSON("src/unittest/resources/allWell.json")
+        self.assertEquals(14, len(data["columnNames"]))
+        result = matchAllSites(data, 3)
+        self.assertEquals(result, False)
+
+
