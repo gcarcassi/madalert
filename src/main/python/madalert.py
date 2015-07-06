@@ -7,3 +7,6 @@ def helloworld(out):
 def retrievegrid(url):
     resp = urllib.urlopen(url)
     return json.load(resp)
+
+def matchSiteAllStatus(data, site, status):
+    return False
