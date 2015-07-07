@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 import sys
-from madalert import retrievegrid
-from pprint import pprint
+from madalert import *
 
 url = 'http://psmad.grid.iu.edu/maddash/grids/OPN+Config+-+OWAMP+Test+Between+OPN+Latency+Hosts'
 data = retrievegrid(url)
 
-pprint(data)
-#pprint("Columns")
-#pprint(data["columnNames"])
-#pprint(data["grid"][0][1][0]["status"])
-#pprint(data["grid"][0][2][0]["status"])
-#pprint(data["grid"][3][0][0]["status"])
+# Check if the whole grid is down
+if (matchAllSites(data, 3)):
+    print("All grid down")
+else:
+    nSites = len(data['columnNames'])
+    for site in range(0, nSites):
+        if (matchSite(data, site, 3)):
+            print("Site " + data['columnNames'][site] + " is down")
+
 
