@@ -56,5 +56,20 @@ def matchInitiatedBySite(data, site, status):
                 
     return True
 
+def matchInitiatedOnSite(data, site, status):
+    #TODO: check status in range
+    nSites = len(data['columnNames'])
+    for column in range(0, nSites):
+        for row in range(0, nSites):
+            if (column != row):
+                if (column == site):
+                    if (not matchTopHalfCell(data, row, column, status)):
+                        return False
+                if (row == site):
+                    if (not matchBottomHalfCell(data, row, column, status)):
+                        return False
+                
+    return True
+
 def matchSiteAllStatus(data, site, status):
     return False

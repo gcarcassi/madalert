@@ -42,4 +42,29 @@ class HelloWorldTest(unittest.TestCase):
         result = matchInitiatedBySite(data, 3, 3)
         self.assertEquals(result, False)
 
+        data = loadJSON("src/unittest/resources/site4CantBeTested.json")
+        result = matchInitiatedBySite(data, 4, 3)
+        self.assertEquals(result, False)
+        result = matchInitiatedBySite(data, 3, 3)
+        self.assertEquals(result, False)
+
+    def test_matchInitiatedBySites(self):
+        data = loadJSON("src/unittest/resources/site3Down.json")
+        result = matchInitiatedOnSite(data, 3, 3)
+        self.assertEquals(result, True)
+        result = matchInitiatedOnSite(data, 2, 3)
+        self.assertEquals(result, False)
+
+        data = loadJSON("src/unittest/resources/site2CantTest.json")
+        result = matchInitiatedOnSite(data, 2, 3)
+        self.assertEquals(result, False)
+        result = matchInitiatedOnSite(data, 3, 3)
+        self.assertEquals(result, False)
+
+        data = loadJSON("src/unittest/resources/site4CantBeTested.json")
+        result = matchInitiatedOnSite(data, 4, 3)
+        self.assertEquals(result, True)
+        result = matchInitiatedOnSite(data, 3, 3)
+        self.assertEquals(result, False)
+
 

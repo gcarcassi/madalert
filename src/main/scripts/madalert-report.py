@@ -26,4 +26,6 @@ for site in range(0, nSites):
         print("* Site " + data['columnNames'][site] + " is down")
     elif (matchInitiatedBySite(data, site, 3)):
         print("* Site " + data['columnNames'][site] + " can't test")
+    elif (matchInitiatedOnSite(data, site, 3)):
+        print("* Site " + data['columnNames'][site] + " can't be tested")
 
