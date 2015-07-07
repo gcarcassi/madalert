@@ -4,10 +4,7 @@ import unittest
 from madalert import *
 
 def loadJSON(path):
-    with open(path) as data_file:
-        return json.load(data_file)
-
-
+    return retrievegrid(path)
 
 class HelloWorldTest(unittest.TestCase):
     def test_matchAllSites(self):
