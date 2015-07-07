@@ -24,4 +24,6 @@ nSites = len(data['columnNames'])
 for site in range(0, nSites):
     if (matchSite(data, site, 3)):
         print("* Site " + data['columnNames'][site] + " is down")
+    elif (matchInitiatedBySite(data, site, 3)):
+        print("* Site " + data['columnNames'][site] + " can't test")
 
