@@ -2,7 +2,8 @@
 import sys
 from madalert import *
 
-url = 'http://psmad.grid.iu.edu/maddash/grids/OPN+Config+-+OWAMP+Test+Between+OPN+Latency+Hosts'
+#url = 'http://psmad.grid.iu.edu/maddash/grids/OPN+Config+-+OWAMP+Test+Between+OPN+Latency+Hosts'
+url = sys.argv[1]
 data = retrievegrid(url)
 
 # Check if the whole grid is down
