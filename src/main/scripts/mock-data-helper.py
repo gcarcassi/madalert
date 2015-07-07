@@ -8,16 +8,18 @@ outputFile = sys.argv[2]
 with open(inputFile) as data_file:
     data = json.load(data_file)
 
-site = 3
+site = 2
 
 nSites = len(data['columnNames'])
 for column in range(0, nSites):
     for row in range(0, nSites):
-        if (column != row and (column == site or row == site )):
-            data["grid"][row][column][0]["message"]="Unable to find any tests"
-            data["grid"][row][column][0]["status"]=3
-            data["grid"][row][column][1]["message"]="Unable to find any tests"
-            data["grid"][row][column][1]["status"]=3
+        if (column != row):
+            if (column == site):
+                data["grid"][row][column][1]["message"]="Unable to find any tests"
+                data["grid"][row][column][1]["status"]=3
+            if (row == site):
+                data["grid"][row][column][0]["message"]="Unable to find any tests"
+                data["grid"][row][column][0]["status"]=3
 
 
 with open(outputFile, "w") as outfile:

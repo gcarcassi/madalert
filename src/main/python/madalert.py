@@ -24,7 +24,7 @@ def matchAllSites(data, status):
         for row in range(0, nSites):
             if (column != row):
                 if (not matchTopHalfCell(data, row, column, status) or
-                    not matchTopHalfCell(data, row, column, status)):
+                    not matchBottomHalfCell(data, row, column, status)):
                     return False
                 
     return True
@@ -36,8 +36,23 @@ def matchSite(data, site, status):
         for row in range(0, nSites):
             if (column != row and (column == site or row == site)):
                 if (not matchTopHalfCell(data, row, column, status) or
-                    not matchTopHalfCell(data, row, column, status)):
+                    not matchBottomHalfCell(data, row, column, status)):
                     return False
+                
+    return True
+
+def matchInitiatedBySite(data, site, status):
+    #TODO: check status in range
+    nSites = len(data['columnNames'])
+    for column in range(0, nSites):
+        for row in range(0, nSites):
+            if (column != row):
+                if (column == site):
+                    if (not matchBottomHalfCell(data, row, column, status)):
+                        return False
+                if (row == site):
+                    if (not matchTopHalfCell(data, row, column, status)):
+                        return False
                 
     return True
 
