@@ -59,20 +59,23 @@ def matchInitiatedBySite(data, site, status, threshold=1.0):
         return True
     return False
 
-def matchInitiatedOnSite(data, site, status):
+def matchInitiatedOnSite(data, site, status, threshold=1.0):
     #TODO: check status in range
     nSites = len(data['columnNames'])
+    matches = 0.0
+    possibleMatches = float((nSites - 1) * 2)
     for column in range(0, nSites):
         for row in range(0, nSites):
             if (column != row):
                 if (column == site):
-                    if (not matchTopHalfCell(data, row, column, status)):
-                        return False
+                    if (matchTopHalfCell(data, row, column, status)):
+                        matches += 1.0
                 if (row == site):
-                    if (not matchBottomHalfCell(data, row, column, status)):
-                        return False
-                
-    return True
+                    if (matchBottomHalfCell(data, row, column, status)):
+                        matches += 1.0
+    if ((matches / possibleMatches) >= threshold):
+        return True
+    return False
 
 def matchSiteAllStatus(data, site, status):
     return False

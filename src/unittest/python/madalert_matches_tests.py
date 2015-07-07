@@ -82,4 +82,14 @@ class HelloWorldTest(unittest.TestCase):
         result = matchInitiatedOnSite(data, 3, 3)
         self.assertEquals(result, False)
 
+        data = loadJSON("src/unittest/resources/site4MostlyCantBeTested.json")
+        result = matchInitiatedOnSite(data, 4, 3)
+        self.assertEquals(result, False)
+        result = matchInitiatedOnSite(data, 4, 3, 1.0)
+        self.assertEquals(result, False)
+        result = matchInitiatedOnSite(data, 4, 3, 0.75)
+        self.assertEquals(result, True)
+        result = matchInitiatedOnSite(data, 3, 3)
+        self.assertEquals(result, False)
+
 
