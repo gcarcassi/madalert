@@ -79,3 +79,37 @@ def matchInitiatedOnSite(data, site, status, threshold=1.0):
 
 def matchSiteAllStatus(data, site, status):
     return False
+
+class Report:
+    def __init__(self, path):
+        self.data = retrievegrid(path)
+        self.sitesStats = []
+        self.calculateStats()
+
+    def calculateStats(self):
+        nSites = len(self.data["columnNames"])
+        for site in range(0, nSites):
+            siteStats = [0, 0, 0, 0]
+            for n in range(0, nSites):
+                if (n != site):
+                    status = self.data["grid"][site][n][0]["status"]
+                    siteStats[status] += 1
+                    status = self.data["grid"][site][n][1]["status"]
+                    siteStats[status] += 1
+                    status = self.data["grid"][n][site][0]["status"]
+                    siteStats[status] += 1
+                    status = self.data["grid"][n][site][1]["status"]
+                    siteStats[status] += 1
+            self.sitesStats.append(siteStats)
+
+    def checkMkReport(self, testGroup, out):
+        nSites = len(self.data["columnNames"])
+        for site in range(0, nSites):
+            siteName = self.data["columnNames"][site].replace(" ", "_")
+            out.write("0 " + testGroup + "_" + siteName +
+                      "count_0=" + str(self.sitesStats[site][0]) +
+                      "|count_1=" + str(self.sitesStats[site][1]) +
+                      "|count_2=" + str(self.sitesStats[site][2]) +
+                      "|count_3=" + str(self.sitesStats[site][3]) +
+                      " OK\n")
+
