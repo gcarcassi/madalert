@@ -88,6 +88,14 @@ class Report:
 
     def calculateStats(self):
         nSites = len(self.data["columnNames"])
+        self.stats = [0, 0, 0, 0]
+        for row in range(0, nSites):
+            for column in range(0, nSites):
+                if (row != column):
+                    status = self.data["grid"][row][column][0]["status"]
+                    self.stats[status] += 1
+                    status = self.data["grid"][row][column][1]["status"]
+                    self.stats[status] += 1
         for site in range(0, nSites):
             siteStats = [0, 0, 0, 0]
             for n in range(0, nSites):
@@ -103,11 +111,17 @@ class Report:
             self.sitesStats.append(siteStats)
 
     def checkMkReport(self, testGroup, out):
+        out.write("0 " + testGroup + "_global " +
+                  "count_0=" + str(self.stats[0]) +
+                  "|count_1=" + str(self.stats[1]) +
+                  "|count_2=" + str(self.stats[2]) +
+                  "|count_3=" + str(self.stats[3]) +
+                  " OK\n")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
             out.write("0 " + testGroup + "_" + siteName +
-                      "count_0=" + str(self.sitesStats[site][0]) +
+                      " count_0=" + str(self.sitesStats[site][0]) +
                       "|count_1=" + str(self.sitesStats[site][1]) +
                       "|count_2=" + str(self.sitesStats[site][2]) +
                       "|count_3=" + str(self.sitesStats[site][3]) +
