@@ -28,7 +28,7 @@ for site in range(0, nSites):
         print("* Site " + data['columnNames'][site] + " can't test")
     elif (matchInitiatedOnSite(data, site, 3)):
         print("* Site " + data['columnNames'][site] + " can't be tested")
-    elif (matchInitiatedBySite(data, site, 3, 0.75)):
+    elif (matchInitiatedBySite(data, site, 3, 0.70)):
         print("* Site " + data['columnNames'][site] + " mostly can't test")
     elif (matchInitiatedOnSite(data, site, 3, 0.70)):
         print("* Site " + data['columnNames'][site] + " mostly can't be tested")
