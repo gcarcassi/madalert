@@ -25,3 +25,14 @@ class CheckMkReportTest(unittest.TestCase):
         verify(out).write("0 madalert_latency_US-FNAL_LT count_0=0|count_1=0|count_2=0|count_3=52 OK\n")
         verify(out).write("0 madalert_latency_lhcperfmon-bnl count_0=0|count_1=0|count_2=0|count_3=52 OK\n")
         verify(out).write("0 madalert_latency_pic_LAT count_0=0|count_1=0|count_2=0|count_3=52 OK\n")
+
+    def test_problems(self):
+        report = Report("src/unittest/resources/allMissing.json")
+        report.addProblem("Minor", 1)
+        report.addProblem("Minor", 1, 0)
+        report.addProblem("Major", 2, 0)
+        self.assertEquals(report.maxSeverityForSite(), 1)
+        self.assertEquals(report.maxSeverityForSite(0), 2)
+        self.assertEquals(report.maxSeverityForSite(1), 0)
+        
+

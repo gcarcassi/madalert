@@ -80,11 +80,44 @@ def matchInitiatedOnSite(data, site, status, threshold=1.0):
 def matchSiteAllStatus(data, site, status):
     return False
 
+class Problem:
+    name = ""
+    # 0 for NONE, 1 for MINOR, 2 for MAJOR
+    severity = 0
+
 class Report:
     def __init__(self, path):
         self.data = retrievegrid(path)
         self.sitesStats = []
         self.calculateStats()
+        self.globalProblems = []
+        self.siteProblems = []
+        nSites = len(self.data["columnNames"])
+        for row in range(0, nSites):
+            self.siteProblems.append([])
+
+    def addProblem(self, name, severity, site=-1):
+        problem = Problem()
+        problem.name = name
+        problem.severity = severity
+
+        if (site == -1):
+            self.globalProblems.append(problem)
+        else:
+            self.siteProblems[site].append(problem)
+
+    def maxSeverityForSite(self, site=-1):
+        severity = 0
+        problems = self.globalProblems
+        if (site != -1):
+            problems = self.siteProblems[site]
+
+        for problem in range(0, len(problems)):
+            newSeverity = problems[problem].severity
+            if (newSeverity > severity):
+                severity = newSeverity
+
+        return severity
 
     def calculateStats(self):
         nSites = len(self.data["columnNames"])
@@ -109,6 +142,31 @@ class Report:
                     status = self.data["grid"][n][site][1]["status"]
                     siteStats[status] += 1
             self.sitesStats.append(siteStats)
+
+    def findProblems(self):
+        # If the whole grid is down, no further checks
+        if (matchAllSites(data, 3)):
+            print("* All grid down")
+            sys.exit()
+
+        # If the whole grid is green, no further checks
+            if (matchAllSites(data, 0)):
+                print("* All is well")
+                sys.exit()
+
+        nSites = len(data['columnNames'])
+        for site in range(0, nSites):
+            if (matchSite(data, site, 3)):
+                print("* Site " + data['columnNames'][site] + " is down")
+            elif (matchInitiatedBySite(data, site, 3)):
+                print("* Site " + data['columnNames'][site] + " can't test")
+            elif (matchInitiatedOnSite(data, site, 3)):
+                print("* Site " + data['columnNames'][site] + " can't be tested")
+            elif (matchInitiatedBySite(data, site, 3, 0.70)):
+                print("* Site " + data['columnNames'][site] + " mostly can't test")
+            elif (matchInitiatedOnSite(data, site, 3, 0.70)):
+                print("* Site " + data['columnNames'][site] + " mostly can't be tested")
+
 
     def checkMkReport(self, testGroup, out):
         out.write("0 " + testGroup + "_global " +
