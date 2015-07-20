@@ -32,7 +32,10 @@ class CheckMkReportTest(unittest.TestCase):
         report.addProblem("Minor", 1, 0)
         report.addProblem("Major", 2, 0)
         self.assertEquals(report.maxSeverityForSite(), 1)
+        self.assertEquals(report.messageForSite(), "Minor")
         self.assertEquals(report.maxSeverityForSite(0), 2)
+        self.assertEquals(report.messageForSite(0), "Minor|Major")
         self.assertEquals(report.maxSeverityForSite(1), 0)
+        self.assertEquals(report.messageForSite(1), "OK")
         
 

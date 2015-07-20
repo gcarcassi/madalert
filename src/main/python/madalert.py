@@ -119,6 +119,21 @@ class Report:
 
         return severity
 
+    def messageForSite(self, site=-1):
+        message = "OK"
+        problems = self.globalProblems
+        if (site != -1):
+            problems = self.siteProblems[site]
+
+        for problem in range(0, len(problems)):
+            if (message == "OK"):
+                message = problems[problem].name
+            else:
+                message = message + "|" + problems[problem].name
+
+        return message
+
+
     def calculateStats(self):
         nSites = len(self.data["columnNames"])
         self.stats = [0, 0, 0, 0]
@@ -169,12 +184,12 @@ class Report:
 
 
     def checkMkReport(self, testGroup, out):
-        out.write("0 " + testGroup + "_global " +
+        out.write(str(self.maxSeverityForSite()) + " " + testGroup + "_global " +
                   "count_0=" + str(self.stats[0]) +
                   "|count_1=" + str(self.stats[1]) +
                   "|count_2=" + str(self.stats[2]) +
                   "|count_3=" + str(self.stats[3]) +
-                  " OK\n")
+                  " " + self.messageForSite() + "\n")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
