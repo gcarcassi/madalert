@@ -159,28 +159,24 @@ class Report:
             self.sitesStats.append(siteStats)
 
     def findProblems(self):
-        # If the whole grid is down, no further checks
-        if (matchAllSites(data, 3)):
-            print("* All grid down")
-            sys.exit()
+        if (matchAllSites(self.data, 3)):
+            self.addProblem("All grid down", 2)
 
-        # If the whole grid is green, no further checks
-            if (matchAllSites(data, 0)):
-                print("* All is well")
-                sys.exit()
+        if (matchAllSites(self.data, 0)):
+            self.addProblem("All is well", 0)
 
-        nSites = len(data['columnNames'])
+        nSites = len(self.data['columnNames'])
         for site in range(0, nSites):
-            if (matchSite(data, site, 3)):
-                print("* Site " + data['columnNames'][site] + " is down")
-            elif (matchInitiatedBySite(data, site, 3)):
-                print("* Site " + data['columnNames'][site] + " can't test")
-            elif (matchInitiatedOnSite(data, site, 3)):
-                print("* Site " + data['columnNames'][site] + " can't be tested")
-            elif (matchInitiatedBySite(data, site, 3, 0.70)):
-                print("* Site " + data['columnNames'][site] + " mostly can't test")
-            elif (matchInitiatedOnSite(data, site, 3, 0.70)):
-                print("* Site " + data['columnNames'][site] + " mostly can't be tested")
+            if (matchSite(self.data, site, 3)):
+                self.addProblem("Site is down", 2, site)
+            elif (matchInitiatedBySite(self.data, site, 3)):
+                self.addProblem("Site can't test", 2, site)
+            elif (matchInitiatedOnSite(self.data, site, 3)):
+                self.addProblem("Site can't be tested", 2, site)
+            elif (matchInitiatedBySite(self.data, site, 3, 0.70)):
+                self.addProblem("Site mostly can't test", 2, site)
+            elif (matchInitiatedOnSite(self.data, site, 3, 0.70)):
+                self.addProblem("Site mostly can't be tested", 2, site)
 
 
     def checkMkReport(self, testGroup, out):
@@ -193,10 +189,10 @@ class Report:
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
-            out.write("0 " + testGroup + "_" + siteName +
+            out.write(str(self.maxSeverityForSite(site)) + " " + testGroup + "_" + siteName +
                       " count_0=" + str(self.sitesStats[site][0]) +
                       "|count_1=" + str(self.sitesStats[site][1]) +
                       "|count_2=" + str(self.sitesStats[site][2]) +
                       "|count_3=" + str(self.sitesStats[site][3]) +
-                      " OK\n")
+                      " " + self.messageForSite(site) + "\n")
 
