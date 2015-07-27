@@ -177,6 +177,8 @@ class Report:
                 self.addProblem("Site mostly can't test", 2, site)
             elif (matchInitiatedOnSite(self.data, site, 3, 0.70)):
                 self.addProblem("Site mostly can't be tested", 2, site)
+            else:
+                self.addProblem("OK - No match", 0, site)
 
 
     def checkMkReport(self, testGroup, out):
