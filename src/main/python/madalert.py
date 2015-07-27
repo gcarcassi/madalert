@@ -198,3 +198,20 @@ class Report:
                       "|count_3=" + str(self.sitesStats[site][3]) +
                       " " + self.messageForSite(site) + "\n")
 
+    def htmlReport(self, out):
+        out.write("<!DOCTYPE html>\n")
+        out.write("<html>\n")
+        out.write("<body>\n")
+        out.write("<h1>Madalert Report</h1>\n")
+        out.write("<h2>" + self.data["name"] + "</h2>\n")
+        out.write("<h2>Problems found:</h2>\n")
+        if (self.maxSeverityForSite() != 0):
+            out.write("<p><b>Global</b> - " + self.messageForSite() + "</p>\n")
+        nSites = len(self.data["columnNames"])
+        for site in range(0, nSites):
+            siteName = self.data["columnNames"][site].replace(" ", "_")
+            if (self.maxSeverityForSite(site)):
+                out.write("<p><b>" + siteName + "</b> - " + self.messageForSite(site) + "</p>\n")
+
+        out.write("</body>\n")
+        out.write("</html>\n")
