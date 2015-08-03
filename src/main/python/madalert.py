@@ -7,6 +7,9 @@ class MatchStatus:
         self.result = True
         self.status = status
 
+    def prepare(self, data):
+        return
+
     def match(self, row, column, half, status):
         if self.status != status:
             self.result = False
@@ -22,6 +25,9 @@ class MatchStatusThreshold:
         self.total = 0.0
         self.threshold = threshold
 
+    def prepare(self, data):
+        return
+
     def match(self, row, column, half, status):
         self.total += 1.0
         if self.status == status:
@@ -31,8 +37,33 @@ class MatchStatusThreshold:
         return (self.matches / self.total) >= self.threshold
 
 
+class MadStatistics:
+    def __init__(self, n_sites):
+        self.total = [0, 0, 0, 0]
+        self.site = []
+        for site in range(0, n_sites):
+            self.site.append([0, 0, 0, 0])
+
+
+class CalculateStatistics:
+    def __init__(self):
+        self.stats = None
+
+    def prepare(self, data):
+        self.stats = MadStatistics(len(data['columnNames']))
+
+    def match(self, row, column, half, status):
+        self.stats.total[status] += 1
+        self.stats.site[row][status] += 1
+        self.stats.site[column][status] += 1
+
+    def get_result(self):
+        return self.stats
+
+
 def for_all_sites_in(data, matcher):
     n_sites = len(data['columnNames'])
+    matcher.prepare(data)
     for column in range(0, n_sites):
         for row in range(0, n_sites):
             if column != row:
@@ -44,6 +75,7 @@ def for_all_sites_in(data, matcher):
 
 def for_site(site, data, matcher):
     n_sites = len(data['columnNames'])
+    matcher.prepare(data)
     for column in range(0, n_sites):
         for row in range(0, n_sites):
             if column != row and (column == site or row == site):
@@ -55,6 +87,7 @@ def for_site(site, data, matcher):
 
 def for_initiated_by_site(site, data, matcher):
     n_sites = len(data['columnNames'])
+    matcher.prepare(data)
     for column in range(0, n_sites):
         for row in range(0, n_sites):
             if column != row:
@@ -68,6 +101,7 @@ def for_initiated_by_site(site, data, matcher):
 
 def for_initiated_on_site(site, data, matcher):
     n_sites = len(data['columnNames'])
+    matcher.prepare(data)
     for column in range(0, n_sites):
         for row in range(0, n_sites):
             if column != row:
@@ -82,23 +116,10 @@ def for_initiated_on_site(site, data, matcher):
 def match_status(status, threshold=1.0):
     return MatchStatusThreshold(status, threshold)
 
-def helloworld(out):
-    out.write("Hello world of Python\n")
 
 def retrievegrid(url):
     resp = urllib.urlopen(url)
     return json.load(resp)
-
-def matchTopHalfCell(data, row, column, status):
-    currentStatus = data["grid"][row][column][0]["status"]
-    return status == currentStatus
-
-def matchBottomHalfCell(data, row, column, status):
-    currentStatus = data["grid"][row][column][1]["status"]
-    return status == currentStatus
-
-def matchHalfCell(halfCell, status):
-    return status == halfCell["status"]
 
 
 def match_all_sites(data, status):
@@ -121,6 +142,7 @@ class Problem:
     name = ""
     # 0 for NONE, 1 for MINOR, 2 for MAJOR
     severity = 0
+
 
 class Report:
     def __init__(self, path):
@@ -172,28 +194,9 @@ class Report:
 
 
     def calculateStats(self):
-        nSites = len(self.data["columnNames"])
-        self.stats = [0, 0, 0, 0]
-        for row in range(0, nSites):
-            for column in range(0, nSites):
-                if (row != column):
-                    status = self.data["grid"][row][column][0]["status"]
-                    self.stats[status] += 1
-                    status = self.data["grid"][row][column][1]["status"]
-                    self.stats[status] += 1
-        for site in range(0, nSites):
-            siteStats = [0, 0, 0, 0]
-            for n in range(0, nSites):
-                if (n != site):
-                    status = self.data["grid"][site][n][0]["status"]
-                    siteStats[status] += 1
-                    status = self.data["grid"][site][n][1]["status"]
-                    siteStats[status] += 1
-                    status = self.data["grid"][n][site][0]["status"]
-                    siteStats[status] += 1
-                    status = self.data["grid"][n][site][1]["status"]
-                    siteStats[status] += 1
-            self.sitesStats.append(siteStats)
+        stats = for_all_sites_in(self.data, CalculateStatistics())
+        self.stats = stats.total
+        self.sitesStats = stats.site
 
     def findProblems(self):
         if (match_all_sites(self.data, 3)):
@@ -208,11 +211,11 @@ class Report:
                 self.addProblem("Site is down", 2, site)
             elif (match_initiated_by_site(self.data, site, 3)):
                 self.addProblem("Site can't test", 2, site)
-            elif (matchInitiatedOnSite(self.data, site, 3)):
+            elif (match_initiated_on_site(self.data, site, 3)):
                 self.addProblem("Site can't be tested", 2, site)
             elif (match_initiated_by_site(self.data, site, 3, 0.70)):
                 self.addProblem("Site mostly can't test", 2, site)
-            elif (matchInitiatedOnSite(self.data, site, 3, 0.70)):
+            elif (match_initiated_on_site(self.data, site, 3, 0.70)):
                 self.addProblem("Site mostly can't be tested", 2, site)
             else:
                 self.addProblem("OK - No match", 0, site)
