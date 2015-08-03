@@ -147,8 +147,7 @@ class Problem:
 class Report:
     def __init__(self, path):
         self.data = retrievegrid(path)
-        self.sitesStats = []
-        self.calculateStats()
+        self.stats = for_all_sites_in(self.data, CalculateStatistics())
         self.globalProblems = []
         self.siteProblems = []
         nSites = len(self.data["columnNames"])
@@ -192,12 +191,6 @@ class Report:
 
         return message
 
-
-    def calculateStats(self):
-        stats = for_all_sites_in(self.data, CalculateStatistics())
-        self.stats = stats.total
-        self.sitesStats = stats.site
-
     def findProblems(self):
         if (match_all_sites(self.data, 3)):
             self.addProblem("All grid down", 2)
@@ -223,19 +216,19 @@ class Report:
 
     def checkMkReport(self, testGroup, out):
         out.write(str(self.maxSeverityForSite()) + " " + testGroup + "_global " +
-                  "count_0=" + str(self.stats[0]) +
-                  "|count_1=" + str(self.stats[1]) +
-                  "|count_2=" + str(self.stats[2]) +
-                  "|count_3=" + str(self.stats[3]) +
+                  "count_0=" + str(self.stats.total[0]) +
+                  "|count_1=" + str(self.stats.total[1]) +
+                  "|count_2=" + str(self.stats.total[2]) +
+                  "|count_3=" + str(self.stats.total[3]) +
                   " " + self.messageForSite() + "\n")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
             out.write(str(self.maxSeverityForSite(site)) + " " + testGroup + "_" + siteName +
-                      " count_0=" + str(self.sitesStats[site][0]) +
-                      "|count_1=" + str(self.sitesStats[site][1]) +
-                      "|count_2=" + str(self.sitesStats[site][2]) +
-                      "|count_3=" + str(self.sitesStats[site][3]) +
+                      " count_0=" + str(self.stats.site[site][0]) +
+                      "|count_1=" + str(self.stats.site[site][1]) +
+                      "|count_2=" + str(self.stats.site[site][2]) +
+                      "|count_3=" + str(self.stats.site[site][3]) +
                       " " + self.messageForSite(site) + "\n")
 
     def htmlReport(self, out):
