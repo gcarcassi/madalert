@@ -12,7 +12,7 @@ class MatchStatus:
             self.result = False
 
 
-def forAllSitesIn(data, matcher):
+def for_all_sites_in(data, matcher):
     nSites = len(data['columnNames'])
     for column in range(0, nSites):
         for row in range(0, nSites):
@@ -21,7 +21,8 @@ def forAllSitesIn(data, matcher):
 
     return matcher.result
 
-def matchStatus(status):
+
+def match_status(status):
     return MatchStatus(status)
 
 def helloworld(out):
@@ -43,7 +44,7 @@ def matchHalfCell(halfCell, status):
     return status == halfCell["status"]
 
 def matchAllSites(data, status):
-    return forAllSitesIn(data, matchStatus(status))
+    return for_all_sites_in(data, match_status(status))
 
 def matchSite(data, site, status):
     #TODO: check status in range
