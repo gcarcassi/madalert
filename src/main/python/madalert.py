@@ -54,14 +54,27 @@ def for_site(site, data, matcher):
 
 
 def for_initiated_by_site(site, data, matcher):
-    nSites = len(data['columnNames'])
-    for column in range(0, nSites):
-        for row in range(0, nSites):
+    n_sites = len(data['columnNames'])
+    for column in range(0, n_sites):
+        for row in range(0, n_sites):
             if column != row:
                 if column == site:
                     matcher.match(row, column, 1, data["grid"][row][column][1]["status"])
                 if row == site:
                     matcher.match(row, column, 0, data["grid"][row][column][0]["status"])
+
+    return matcher.get_result()
+
+
+def for_initiated_on_site(site, data, matcher):
+    n_sites = len(data['columnNames'])
+    for column in range(0, n_sites):
+        for row in range(0, n_sites):
+            if column != row:
+                if column == site:
+                    matcher.match(row, column, 0, data["grid"][row][column][0]["status"])
+                if row == site:
+                    matcher.match(row, column, 1, data["grid"][row][column][1]["status"])
 
     return matcher.get_result()
 
@@ -99,23 +112,10 @@ def match_site(data, site, status):
 def match_initiated_by_site(data, site, status, threshold=1.0):
     return for_initiated_by_site(site, data, match_status(status, threshold))
 
-def matchInitiatedOnSite(data, site, status, threshold=1.0):
-    #TODO: check status in range
-    nSites = len(data['columnNames'])
-    matches = 0.0
-    possibleMatches = float((nSites - 1) * 2)
-    for column in range(0, nSites):
-        for row in range(0, nSites):
-            if (column != row):
-                if (column == site):
-                    if (matchTopHalfCell(data, row, column, status)):
-                        matches += 1.0
-                if (row == site):
-                    if (matchBottomHalfCell(data, row, column, status)):
-                        matches += 1.0
-    if ((matches / possibleMatches) >= threshold):
-        return True
-    return False
+
+def match_initiated_on_site(data, site, status, threshold=1.0):
+    return for_initiated_on_site(site, data, match_status(status, threshold))
+
 
 class Problem:
     name = ""
