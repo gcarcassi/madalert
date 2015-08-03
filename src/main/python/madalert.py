@@ -190,6 +190,8 @@ class Problem:
     name = ""
     # 0 for NONE, 1 for MINOR, 2 for MAJOR
     severity = 0
+    # INFRASTRUCTURE or ACTUAL
+    category = ""
 
 
 class Report:
@@ -202,67 +204,71 @@ class Report:
         for row in range(0, nSites):
             self.siteProblems.append([])
 
-    def addProblem(self, name, severity, site=-1):
+    def addProblem(self, name, severity, category, site=-1):
         problem = Problem()
         problem.name = name
         problem.severity = severity
+        problem.category = category
 
         if (site == -1):
             self.globalProblems.append(problem)
         else:
             self.siteProblems[site].append(problem)
 
-    def maxSeverityForSite(self, site=-1):
+    def maxSeverityForSite(self, site=-1, category=""):
         severity = 0
         problems = self.globalProblems
         if (site != -1):
             problems = self.siteProblems[site]
 
         for problem in range(0, len(problems)):
-            newSeverity = problems[problem].severity
-            if (newSeverity > severity):
-                severity = newSeverity
+            if category == "" or category == problems[problem].category:
+                newSeverity = problems[problem].severity
+                if (newSeverity > severity):
+                    severity = newSeverity
 
         return severity
 
-    def messageForSite(self, site=-1):
+    def messageForSite(self, site=-1, category=""):
         message = "OK - No match"
         problems = self.globalProblems
         if (site != -1):
             problems = self.siteProblems[site]
 
         for problem in range(0, len(problems)):
-            if (message == "OK - No match"):
-                message = problems[problem].name
-            else:
-                message = message + "|" + problems[problem].name
+            if category == "" or category == problems[problem].category:
+                if (message == "OK - No match"):
+                    message = problems[problem].name
+                else:
+                    message = message + "|" + problems[problem].name
 
         return message
 
     def findProblems(self):
         if (match_all_sites(self.data, 3)):
-            self.addProblem("All grid down", 2)
+            self.addProblem("All grid down", 2, "INFRASTRUCTURE")
+            return
 
         if (match_all_sites(self.data, 0)):
-            self.addProblem("All is well", 0)
+            self.addProblem("All is well", 0, "INFRASTRUCTURE")
 
         nSites = len(self.data['columnNames'])
         for site in range(0, nSites):
             if (match_site(self.data, site, 3)):
-                self.addProblem("Site is down", 2, site)
+                self.addProblem("Site is down", 2, "INFRASTRUCTURE", site)
             elif (match_initiated_by_site(self.data, site, 3)):
-                self.addProblem("Site can't test", 2, site)
+                self.addProblem("Site can't test", 2, "INFRASTRUCTURE", site)
             elif (match_initiated_on_site(self.data, site, 3)):
-                self.addProblem("Site can't be tested", 2, site)
+                self.addProblem("Site can't be tested", 2, "INFRASTRUCTURE", site)
             elif (match_initiated_by_site(self.data, site, 3, 0.70)):
-                self.addProblem("Site mostly can't test", 2, site)
+                self.addProblem("Site mostly can't test", 2, "INFRASTRUCTURE", site)
             elif (match_initiated_on_site(self.data, site, 3, 0.70)):
-                self.addProblem("Site mostly can't be tested", 2, site)
+                self.addProblem("Site mostly can't be tested", 2, "INFRASTRUCTURE", site)
             else:
                 if for_outgoing_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
-                    self.addProblem("Outgoing problem at site", 2, site)
+                    self.addProblem("Outgoing problem at site", 2, "ACTUAL", site)
                 if for_incoming_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
-                    self.addProblem("Incoming problem at site", 2, site)
+                    self.addProblem("Incoming problem at site", 2, "ACTUAL", site)
 
 
     def checkMkReport(self, testGroup, out):
@@ -288,14 +294,22 @@ class Report:
         out.write("<body>\n")
         out.write("<h1>Madalert Report</h1>\n")
         out.write("<h2>" + self.data["name"] + "</h2>\n")
-        out.write("<h2>Problems found:</h2>\n")
-        if (self.maxSeverityForSite() != 0):
-            out.write("<p><b>Global</b> - " + self.messageForSite() + "</p>\n")
+        out.write("<h2>Infrastructure problems:</h2>\n")
+        if (self.maxSeverityForSite(category="INFRASTRUCTURE") != 0):
+            out.write("<p><b>Global</b> - " + self.messageForSite(category="INFRASTRUCTURE") + "</p>\n")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
-            if (self.maxSeverityForSite(site)):
-                out.write("<p><b>" + siteName + "</b> - " + self.messageForSite(site) + "</p>\n")
+            if (self.maxSeverityForSite(site, "INFRASTRUCTURE")):
+                out.write("<p><b>" + siteName + "</b> - " + self.messageForSite(site, "INFRASTRUCTURE") + "</p>\n")
+        out.write("<h2>Problems found:</h2>\n")
+        if (self.maxSeverityForSite(category="ACTUAL") != 0):
+            out.write("<p><b>Global</b> - " + self.messageForSite(category="ACTUAL") + "</p>\n")
+        nSites = len(self.data["columnNames"])
+        for site in range(0, nSites):
+            siteName = self.data["columnNames"][site].replace(" ", "_")
+            if (self.maxSeverityForSite(site, "ACTUAL")):
+                out.write("<p><b>" + siteName + "</b> - " + self.messageForSite(site, "ACTUAL") + "</p>\n")
 
         out.write("</body>\n")
         out.write("</html>\n")
