@@ -37,6 +37,26 @@ class MatchStatusThreshold:
         return (self.matches / self.total) >= self.threshold
 
 
+class MatchWeightedStatus:
+    def __init__(self, weights, threshold=1.0):
+        self.weights = weights
+        self.matches = 0.0
+        self.total = 0.0
+        self.threshold = threshold
+
+    def prepare(self, data):
+        return
+
+    def match(self, row, column, half, status):
+        weight = self.weights[status]
+        if 0.0 <= weight <= 1.0:
+            self.total += 1.0
+            self.matches += weight
+
+    def get_result(self):
+        return (self.matches / self.total) >= self.threshold
+
+
 class MadStatistics:
     def __init__(self, n_sites):
         self.total = [0, 0, 0, 0]
@@ -113,8 +133,36 @@ def for_initiated_on_site(site, data, matcher):
     return matcher.get_result()
 
 
+def for_outgoing_from_site(site, data, matcher):
+    n_sites = len(data['columnNames'])
+    matcher.prepare(data)
+    for row in range(0, n_sites):
+        if row != site:
+            matcher.match(row, site, 1, data["grid"][row][site][1]["status"])
+            matcher.match(row, site, 0, data["grid"][row][site][0]["status"])
+
+    return matcher.get_result()
+
+
+def for_incoming_from_site(site, data, matcher):
+    n_sites = len(data['columnNames'])
+    matcher.prepare(data)
+    for column in range(0, n_sites):
+        if column != site:
+            matcher.match(site, column, 1, data["grid"][site][column][1]["status"])
+            matcher.match(site, column, 0, data["grid"][site][column][0]["status"])
+
+    return matcher.get_result()
+
+
 def match_status(status, threshold=1.0):
     return MatchStatusThreshold(status, threshold)
+
+
+# Each weight should be either -1.0 (excludeo from count)
+# or 0.0 to 1.0
+def match_weighted_status(weights, threshold=1.0):
+    return MatchWeightedStatus(weights, threshold)
 
 
 def retrievegrid(url):
@@ -178,13 +226,13 @@ class Report:
         return severity
 
     def messageForSite(self, site=-1):
-        message = "OK"
+        message = "OK - No match"
         problems = self.globalProblems
         if (site != -1):
             problems = self.siteProblems[site]
 
         for problem in range(0, len(problems)):
-            if (message == "OK"):
+            if (message == "OK - No match"):
                 message = problems[problem].name
             else:
                 message = message + "|" + problems[problem].name
@@ -211,7 +259,10 @@ class Report:
             elif (match_initiated_on_site(self.data, site, 3, 0.70)):
                 self.addProblem("Site mostly can't be tested", 2, site)
             else:
-                self.addProblem("OK - No match", 0, site)
+                if for_outgoing_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
+                    self.addProblem("Outgoing problem at site", 2, site)
+                if for_incoming_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
+                    self.addProblem("Incoming problem at site", 2, site)
 
 
     def checkMkReport(self, testGroup, out):
