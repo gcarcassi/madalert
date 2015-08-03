@@ -18,6 +18,18 @@ def for_all_sites_in(data, matcher):
         for row in range(0, nSites):
             if column != row:
                 matcher.match(row, column, 0, data["grid"][row][column][0]["status"])
+                matcher.match(row, column, 1, data["grid"][row][column][1]["status"])
+
+    return matcher.result
+
+
+def for_site(site, data, matcher):
+    nSites = len(data['columnNames'])
+    for column in range(0, nSites):
+        for row in range(0, nSites):
+            if column != row and (column == site or row == site):
+                matcher.match(row, column, 0, data["grid"][row][column][0]["status"])
+                matcher.match(row, column, 1, data["grid"][row][column][1]["status"])
 
     return matcher.result
 
@@ -43,20 +55,13 @@ def matchBottomHalfCell(data, row, column, status):
 def matchHalfCell(halfCell, status):
     return status == halfCell["status"]
 
-def matchAllSites(data, status):
+
+def match_all_sites(data, status):
     return for_all_sites_in(data, match_status(status))
 
-def matchSite(data, site, status):
-    #TODO: check status in range
-    nSites = len(data['columnNames'])
-    for column in range(0, nSites):
-        for row in range(0, nSites):
-            if (column != row and (column == site or row == site)):
-                if (not matchTopHalfCell(data, row, column, status) or
-                    not matchBottomHalfCell(data, row, column, status)):
-                    return False
-                
-    return True
+
+def match_site(data, site, status):
+    return for_site(site, data, match_status(status))
 
 def matchInitiatedBySite(data, site, status, threshold=1.0):
     #TODO: check status in range
@@ -176,15 +181,15 @@ class Report:
             self.sitesStats.append(siteStats)
 
     def findProblems(self):
-        if (matchAllSites(self.data, 3)):
+        if (match_all_sites(self.data, 3)):
             self.addProblem("All grid down", 2)
 
-        if (matchAllSites(self.data, 0)):
+        if (match_all_sites(self.data, 0)):
             self.addProblem("All is well", 0)
 
         nSites = len(self.data['columnNames'])
         for site in range(0, nSites):
-            if (matchSite(self.data, site, 3)):
+            if (match_site(self.data, site, 3)):
                 self.addProblem("Site is down", 2, site)
             elif (matchInitiatedBySite(self.data, site, 3)):
                 self.addProblem("Site can't test", 2, site)
