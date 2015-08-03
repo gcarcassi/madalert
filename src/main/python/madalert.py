@@ -1,6 +1,33 @@
 import sys
 import json, urllib
 
+class FullGrid:
+    def __init__(self, data):
+        self.data = data
+        self.column = 0
+        self.row = 0
+        self.half = 1
+        self.nSites = len(data['columnNames'])
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        self.half +=1
+        if self.half == 2:
+            self.half = 0
+            self.row += 1
+            if self.row == self.column:
+                self.row += 1
+            if self.row == self.nSites:
+                self.row = 0
+                self.column += 1
+                if self.column == self.nSites:
+                    raise StopIteration
+
+        return self.data["grid"][self.row][self.column][self.half]
+
+
 def helloworld(out):
     out.write("Hello world of Python\n")
 
@@ -16,17 +43,14 @@ def matchBottomHalfCell(data, row, column, status):
     currentStatus = data["grid"][row][column][1]["status"]
     return status == currentStatus
 
+def matchHalfCell(halfCell, status):
+    return status == halfCell["status"]
 
 def matchAllSites(data, status):
-    #TODO: check status in range
-    nSites = len(data['columnNames'])
-    for column in range(0, nSites):
-        for row in range(0, nSites):
-            if (column != row):
-                if (not matchTopHalfCell(data, row, column, status) or
-                    not matchBottomHalfCell(data, row, column, status)):
-                    return False
-                
+    for halfCell in FullGrid(data):
+        if not matchHalfCell(halfCell, status):
+            return False
+
     return True
 
 def matchSite(data, site, status):
