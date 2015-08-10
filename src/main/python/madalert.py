@@ -133,7 +133,7 @@ def for_initiated_on_site(site, data, matcher):
     return matcher.get_result()
 
 
-def for_outgoing_from_site(site, data, matcher):
+def for_incoming_from_site(site, data, matcher):
     n_sites = len(data['columnNames'])
     matcher.prepare(data)
     for row in range(0, n_sites):
@@ -144,7 +144,7 @@ def for_outgoing_from_site(site, data, matcher):
     return matcher.get_result()
 
 
-def for_incoming_from_site(site, data, matcher):
+def for_outgoing_from_site(site, data, matcher):
     n_sites = len(data['columnNames'])
     matcher.prepare(data)
     for column in range(0, n_sites):
@@ -266,9 +266,9 @@ class Report:
                 self.addProblem("Site mostly can't be tested", 2, "INFRASTRUCTURE", site)
             else:
                 if for_outgoing_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
-                    self.addProblem("Outgoing problem at site", 2, "ACTUAL", site)
+                    self.addProblem("Outgoing tests failure (" + self.data["statusLabels"][2] + ")", 2, "ACTUAL", site)
                 if for_incoming_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
-                    self.addProblem("Incoming problem at site", 2, "ACTUAL", site)
+                    self.addProblem("Incoming tests failure (" + self.data["statusLabels"][2] + ")", 2, "ACTUAL", site)
 
 
     def checkMkReport(self, testGroup, out):
