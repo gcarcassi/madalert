@@ -196,6 +196,7 @@ class Problem:
 
 class Report:
     def __init__(self, path):
+        self.path = path
         self.data = retrievegrid(path)
         self.stats = for_all_sites_in(self.data, CalculateStatistics())
         self.globalProblems = []
@@ -289,27 +290,128 @@ class Report:
                       " " + self.messageForSite(site) + "\n")
 
     def htmlReport(self, out):
-        out.write("<!DOCTYPE html>\n")
-        out.write("<html>\n")
-        out.write("<body>\n")
-        out.write("<h1>Madalert Report</h1>\n")
-        out.write("<h2>" + self.data["name"] + "</h2>\n")
-        out.write("<h2>Infrastructure problems:</h2>\n")
+
+        out.write("""<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Madalert report</title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    </head>
+
+    <body style="padding-top: 50px">
+        <!-- Navigation bar -->
+        <!-- ============== -->
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand">Madalert</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a><i class="fa fa-check-square-o  fa-fw"></i>&nbsp; Report</a></li>
+                        <li><a href="https://github.com/gcarcassi/madalert"><i class="fa fa-github fa-fw"></i>&nbsp; GitHub</a></li>
+                        <li><a href="https://github.com/gcarcassi/madalert/wiki"><i class="fa fa-book fa-fw"></i>&nbsp; Wiki</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+
+
+        <div class="featurette gray">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>Madalert Report</h1>
+""")
+        out.write("<p>Mesh name: " + self.data["name"] + "</p>")
+        out.write("                        <p>Mesh location: <a href=\"" + self.path + "\">"
+                  + "                            " + self.path
+                  + "                            </a></p>")
+        out.write("""                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><b>Infrastructure problems</b></h3>
+                            </div>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Site</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+""")
+
         if (self.maxSeverityForSite(category="INFRASTRUCTURE") != 0):
-            out.write("<p><b>Global</b> - " + self.messageForSite(category="INFRASTRUCTURE") + "</p>\n")
+            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite("INFRASTRUCTURE") + "</td></tr>")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
             if (self.maxSeverityForSite(site, "INFRASTRUCTURE")):
-                out.write("<p><b>" + siteName + "</b> - " + self.messageForSite(site, "INFRASTRUCTURE") + "</p>\n")
-        out.write("<h2>Problems found:</h2>\n")
+                out.write("<tr><td><b>" + siteName + "</b></td><td>" + self.messageForSite(site, "INFRASTRUCTURE") + "</td></tr>")
+
+        out.write("""                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><b>Test failures</b></h3>
+                            </div>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Site</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+""")
+
         if (self.maxSeverityForSite(category="ACTUAL") != 0):
-            out.write("<p><b>Global</b> - " + self.messageForSite(category="ACTUAL") + "</p>\n")
+            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite("ACTUAL") + "</td></tr>")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
             if (self.maxSeverityForSite(site, "ACTUAL")):
-                out.write("<p><b>" + siteName + "</b> - " + self.messageForSite(site, "ACTUAL") + "</p>\n")
+                out.write("<tr><td><b>" + siteName + "</b></td><td>" + self.messageForSite(site, "ACTUAL") + "</td></tr>")
 
-        out.write("</body>\n")
-        out.write("</html>\n")
+        out.write("""                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placed at the end of the document so the pages load faster -->
+        <!-- JQuery -->
+        <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    </body>
+</html>
+""")
