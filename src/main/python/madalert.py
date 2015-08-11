@@ -364,7 +364,7 @@ class Report:
 """)
 
         if (self.maxSeverityForSite(category="INFRASTRUCTURE") != 0):
-            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite("INFRASTRUCTURE") + "</td></tr>")
+            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite(-1, "INFRASTRUCTURE") + "</td></tr>")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
@@ -391,7 +391,7 @@ class Report:
 """)
 
         if (self.maxSeverityForSite(category="ACTUAL") != 0):
-            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite("ACTUAL") + "</td></tr>")
+            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite(-1, "ACTUAL") + "</td></tr>")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
