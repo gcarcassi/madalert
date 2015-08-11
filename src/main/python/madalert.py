@@ -343,10 +343,9 @@ class Report:
                     <div class="col-md-12">
                         <h1>Madalert Report</h1>
 """)
-        out.write("<p>Mesh name: " + self.data["name"] + "</p>")
+        out.write("                        <p>Mesh name: " + self.data["name"] + "</p>\n")
         out.write("                        <p>Mesh location: <a href=\"" + self.path + "\">"
-                  + "                            " + self.path
-                  + "                            </a></p>")
+                  + self.path + "</a></p>\n")
         out.write("""                    </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
@@ -364,12 +363,12 @@ class Report:
 """)
 
         if (self.maxSeverityForSite(category="INFRASTRUCTURE") != 0):
-            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite(-1, "INFRASTRUCTURE") + "</td></tr>")
+            out.write("                                    <tr><td><b>Global (all)</b></td><td>" + self.messageForSite(-1, "INFRASTRUCTURE") + "</td></tr>\n")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
             if (self.maxSeverityForSite(site, "INFRASTRUCTURE")):
-                out.write("<tr><td><b>" + siteName + "</b></td><td>" + self.messageForSite(site, "INFRASTRUCTURE") + "</td></tr>")
+                out.write("                                    <tr><td><b>" + siteName + "</b></td><td>" + self.messageForSite(site, "INFRASTRUCTURE") + "</td></tr>\n")
 
         out.write("""                                </tbody>
                             </table>
@@ -391,12 +390,12 @@ class Report:
 """)
 
         if (self.maxSeverityForSite(category="ACTUAL") != 0):
-            out.write("<tr><td><b>Global (all)</b></td><td>" + self.messageForSite(-1, "ACTUAL") + "</td></tr>")
+            out.write("                                    <tr><td><b>Global (all)</b></td><td>" + self.messageForSite(-1, "ACTUAL") + "</td></tr>\n")
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
             if (self.maxSeverityForSite(site, "ACTUAL")):
-                out.write("<tr><td><b>" + siteName + "</b></td><td>" + self.messageForSite(site, "ACTUAL") + "</td></tr>")
+                out.write("                                    <tr><td><b>" + siteName + "</b></td><td>" + self.messageForSite(site, "ACTUAL") + "</td></tr>\n")
 
         out.write("""                                </tbody>
                             </table>
