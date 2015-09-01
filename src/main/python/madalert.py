@@ -291,6 +291,16 @@ class Report:
 
     def jsonReport(self, out):
         jsonReport = {"sites" : {}}
+        globalSite = {"stats": self.stats.total, "severity": self.maxSeverityForSite()}
+        problems = self.globalProblems
+        if len(problems) > 0 :
+            newSiteProblems = []
+            for problem in range(0, len(problems)):
+                newSiteProblems.append({"name": problems[problem].name, "severity": problems[problem].severity, "category": problems[problem].category})
+            globalSite["problems"] = newSiteProblems
+        jsonReport["global"] = globalSite
+
+
         nSites = len(self.data["columnNames"])
         for site in range(0, nSites):
             siteName = self.data["columnNames"][site].replace(" ", "_")
