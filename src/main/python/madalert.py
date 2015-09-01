@@ -289,6 +289,15 @@ class Report:
                       "|count_3=" + str(self.stats.site[site][3]) +
                       " " + self.messageForSite(site) + "\n")
 
+    def jsonReport(self, out):
+        jsonReport = {"sites" : {}}
+        nSites = len(self.data["columnNames"])
+        for site in range(0, nSites):
+            siteName = self.data["columnNames"][site].replace(" ", "_")
+            newSite = {"stats": self.stats.site[site], "severity": self.maxSeverityForSite(site)}
+            jsonReport["sites"][siteName] = newSite
+        json.dump(jsonReport, out)
+
     def htmlReport(self, out):
 
         out.write("""<!DOCTYPE html>
