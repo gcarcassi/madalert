@@ -25,10 +25,21 @@ import static org.hamcrest.CoreMatchers.*;
 public class MeshTest {
 
     @Test
-    public void testGetSites() {
+    public void getSites() {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allWell.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
             assertThat(mesh.getSites(), equalTo(Arrays.asList("CERN-PROD LAT", "FZK-LCG2 LAT", "IN2P3-CC LAT", "INFN-T1 LAT", "KR-KISTI-GSDC-01 LAT", "NDGF-T1 LAT", "RAL-LCG2 LAT", "RRC-KI-T1 LAT", "SARA-MATRIX LAT", "TRIUMF-LCG2 LAT", "Taiwan-LCG2 LAT", "US-FNAL LT", "lhcperfmon-bnl", "pic LAT")));
+        }
+    }
+
+    @Test
+    public void statusFor() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site2CantTest.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            assertThat(mesh.statusFor(2, 0, Mesh.CellHalf.INITIATED_BY_ROW), equalTo(3));
+            assertThat(mesh.statusFor(2, 0, Mesh.CellHalf.INITIATED_BY_COLUMN), equalTo(0));
+            assertThat(mesh.statusFor(0, 2, Mesh.CellHalf.INITIATED_BY_ROW), equalTo(0));
+            assertThat(mesh.statusFor(0, 2, Mesh.CellHalf.INITIATED_BY_COLUMN), equalTo(3));
         }
     }
 
