@@ -10,5 +10,26 @@ package net.es.maddash.madalert;
  * @author carcassi
  */
 public class Problem {
+    private final String name;
+    private final int severity;
+    private final String category;
+
+    public Problem(String name, int severity, String category) {
+        this.name = name;
+        this.severity = severity;
+        this.category = category;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public int getSeverity() {
+        return severity;
+    }
     
 }
