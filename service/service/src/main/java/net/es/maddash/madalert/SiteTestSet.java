@@ -10,7 +10,7 @@ package net.es.maddash.madalert;
  *
  * @author carcassi
  */
-abstract class SiteTestSet {
+public abstract class SiteTestSet {
     abstract TestSet site(int site);
     
     static SiteTestSet forSite() {

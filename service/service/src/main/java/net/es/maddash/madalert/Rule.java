@@ -9,9 +9,42 @@ package net.es.maddash.madalert;
  *
  * @author carcassi
  */
-public class Rule {
-    public static Rule rule (TestSet testSet, StatusMatcher matcher, Problem problem) {
-        return null;
+public abstract class Rule {
+    
+    public Report createReport(Mesh mesh) {
+        Report report = new Report();
+        addToReport(report, mesh);
+        return report;
+    }
+
+    abstract void addToReport(Report report, Mesh mesh);
+    
+    public static Rule rule(final TestSet testSet, final StatusMatcher matcher, final Problem problem) {
+        return new Rule() {
+
+            @Override
+            void addToReport(Report report, Mesh mesh) {
+                if (testSet.match(mesh, matcher)) {
+                    report.addGlobalProblem(problem);
+                }
+            }
+            
+        };
+    }
+    
+    public static Rule siteRule(final SiteTestSet siteTestSet, final StatusMatcher matcher, final Problem problem) {
+        return new Rule() {
+
+            @Override
+            void addToReport(Report report, Mesh mesh) {
+                for (int site = 0; site < mesh.getSites().size(); site++) {
+                    TestSet testSet = siteTestSet.site(site);
+                    if (testSet.match(mesh, matcher)) {
+                        report.addProblem(site, problem);
+                    }
+                }
+            }
+        };
     }
     
     public static StatusMatcher matchStatus(int status) {

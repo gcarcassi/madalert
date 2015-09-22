@@ -6,6 +6,7 @@
 package net.es.maddash.madalert;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,6 @@ public class Report {
     }
     
     public List<Problem> getSiteProblems(int site) {
-        return (siteProblems.get(site) == null) ? null : siteProblems.get(site);
+        return (siteProblems.get(site) == null) ? Collections.emptyList() : siteProblems.get(site);
     }
 }

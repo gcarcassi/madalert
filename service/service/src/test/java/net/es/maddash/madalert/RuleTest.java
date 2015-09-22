@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.mockito.InOrder;
 import static org.mockito.Mockito.*;
+import static net.es.maddash.madalert.Rule.*;
 
 /**
  *
@@ -51,6 +52,34 @@ public class RuleTest {
             Mesh mesh = Mesh.from(reader.readObject());
             assertThat(Rule.forInitiatedBySite().site(2).match(mesh, Rule.matchStatus(3)), equalTo(true));
             assertThat(Rule.forInitiatedOnSite().site(2).match(mesh, Rule.matchStatus(3)), equalTo(false));
+        }
+    }
+
+    @Test
+    public void allSitesRules1() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allWell.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Problem problem = new Problem("Grid is down", 3, "INFRASTRUCTURE");
+            Report report = Rule.rule(forAllSites(), matchStatus(3), problem).createReport(mesh);
+            
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int i = 0; i < mesh.getSites().size(); i++) {
+                assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+            }
+        }
+    }
+
+    @Test
+    public void allSitesRules2() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allMissing.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Problem problem = new Problem("Grid is down", 3, "INFRASTRUCTURE");
+            Report report = Rule.rule(forAllSites(), matchStatus(3), problem).createReport(mesh);
+            
+            assertThat(report.getGlobalProblems(), equalTo(Arrays.asList(problem)));
+            for (int i = 0; i < mesh.getSites().size(); i++) {
+                assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+            }
         }
     }
 
