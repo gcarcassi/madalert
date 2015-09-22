@@ -5,6 +5,8 @@
  */
 package net.es.maddash.madalert;
 
+import java.util.Objects;
+
 /**
  *
  * @author carcassi
@@ -30,6 +32,41 @@ public class Problem {
 
     public int getSeverity() {
         return severity;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 53 * hash + Objects.hashCode(this.name);
+        hash = 53 * hash + this.severity;
+        hash = 53 * hash + Objects.hashCode(this.category);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Problem other = (Problem) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (this.severity != other.severity) {
+            return false;
+        }
+        if (!Objects.equals(this.category, other.category)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + category + "](" + severity + ") " + name;
     }
     
 }
