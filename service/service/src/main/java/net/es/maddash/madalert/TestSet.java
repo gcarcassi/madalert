@@ -10,7 +10,7 @@ package net.es.maddash.madalert;
  *
  * @author carcassi
  */
-abstract class TestSet {
+public abstract class TestSet {
     
     abstract boolean match(Mesh mesh, StatusMatcher matcher);
     

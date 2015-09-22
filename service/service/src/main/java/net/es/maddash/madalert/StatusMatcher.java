@@ -5,21 +5,19 @@
  */
 package net.es.maddash.madalert;
 
-import net.es.maddash.madalert.Mesh;
-
 /**
  *
  * @author carcassi
  */
-abstract class StatusMatcher {
-    public abstract class Instance {
+public abstract class StatusMatcher {
+    abstract class Instance {
         public abstract void match(int row, int column, Mesh.CellHalf cellHalf, int status);
         public abstract boolean isMatched();
     }
     
-    public abstract Instance prepareInstance(Mesh mesh);
+    abstract Instance prepareInstance(Mesh mesh);
     
-    public static StatusMatcher matchStatus(final int status) {
+    static StatusMatcher matchStatus(final int status) {
         return new StatusMatcher() {
             
             private boolean result = true;
@@ -44,7 +42,7 @@ abstract class StatusMatcher {
         };
     }
     
-    public static StatusMatcher matchStatus(final int status, final double threshold) {
+    static StatusMatcher matchStatus(final int status, final double threshold) {
         return new StatusMatcher() {
             
             private double matches = 0.0;
@@ -71,7 +69,7 @@ abstract class StatusMatcher {
         };
     }
     
-    public static StatusMatcher matchStatus(final double[] weights, final double threshold) {
+    static StatusMatcher matchStatus(final double[] weights, final double threshold) {
         return new StatusMatcher() {
             
             private double matches = 0.0;

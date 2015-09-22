@@ -25,4 +25,20 @@ public class Rule {
     public static StatusMatcher matchStatus(double[] weights, double threshold) {
         return StatusMatcher.matchStatus(weights, threshold);
     }
+    
+    public static TestSet forAllSites() {
+        return TestSet.forAllSites();
+    }
+    
+    public static SiteTestSet forSite() {
+        return SiteTestSet.forSite();
+    }
+    
+    public static SiteTestSet forInitiatedBySite() {
+        return SiteTestSet.forInitiatedBySite();
+    }
+    
+    public static SiteTestSet forInitiatedOnSite() {
+        return SiteTestSet.forInitiatedOnSite();
+    }
 }
