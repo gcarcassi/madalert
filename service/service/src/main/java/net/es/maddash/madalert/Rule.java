@@ -5,6 +5,9 @@
  */
 package net.es.maddash.madalert;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author carcassi
@@ -42,6 +45,22 @@ public abstract class Rule {
                     if (testSet.match(mesh, matcher)) {
                         report.addProblem(site, problem);
                     }
+                }
+            }
+        };
+    }
+    
+    public static Rule runAll(Rule... rules) {
+        return runAll(Arrays.asList(rules));
+    }
+    
+    public static Rule runAll(final List<Rule> rules) {
+        return new Rule() {
+
+            @Override
+            void addToReport(Report report, Mesh mesh) {
+                for (Rule rule : rules) {
+                    rule.addToReport(report, mesh);
                 }
             }
         };
