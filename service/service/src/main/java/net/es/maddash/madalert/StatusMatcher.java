@@ -19,12 +19,12 @@ public abstract class StatusMatcher {
     
     static StatusMatcher matchStatus(final int status) {
         return new StatusMatcher() {
-            
-            private boolean result = true;
 
             @Override
             public Instance prepareInstance(Mesh mesh) {
                 return new Instance() {
+            
+                    private boolean result = true;
 
                     @Override
                     public void match(int row, int column, Mesh.CellHalf cellHalf, int matchStatus) {
@@ -44,13 +44,13 @@ public abstract class StatusMatcher {
     
     static StatusMatcher matchStatus(final int status, final double threshold) {
         return new StatusMatcher() {
-            
-            private double matches = 0.0;
-            private double total = 0.0;
 
             @Override
             public Instance prepareInstance(Mesh mesh) {
                 return new Instance() {
+            
+                    private double matches = 0.0;
+                    private double total = 0.0;
 
                     @Override
                     public void match(int row, int column, Mesh.CellHalf cellHalf, int matchStatus) {
@@ -71,13 +71,13 @@ public abstract class StatusMatcher {
     
     static StatusMatcher matchStatus(final double[] weights, final double threshold) {
         return new StatusMatcher() {
-            
-            private double matches = 0.0;
-            private double total = 0.0;
 
             @Override
             public Instance prepareInstance(Mesh mesh) {
                 return new Instance() {
+            
+                    private double matches = 0.0;
+                    private double total = 0.0;
 
                     @Override
                     public void match(int row, int column, Mesh.CellHalf cellHalf, int matchStatus) {

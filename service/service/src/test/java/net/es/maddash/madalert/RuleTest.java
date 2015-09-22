@@ -83,4 +83,38 @@ public class RuleTest {
         }
     }
 
+    @Test
+    public void sitesRule1() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allMissing.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Problem problem = new Problem("Site is down", 3, "INFRASTRUCTURE");
+            Report report = Rule.siteRule(forSite(), matchStatus(3), problem).createReport(mesh);
+            
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int site = 0; site < mesh.getSites().size(); site++) {
+                assertThat(report.getSiteProblems(site), equalTo(Arrays.asList(problem)));
+            }
+        }
+    }
+
+    @Test
+    public void sitesRule2() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site3Down.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Problem problem = new Problem("Site is down", 3, "INFRASTRUCTURE");
+            Report report = Rule.siteRule(forSite(), matchStatus(3), problem).createReport(mesh);
+            
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int site = 0; site < mesh.getSites().size(); site++) {
+                if (site == 3) {
+                    assertThat(report.getSiteProblems(site), equalTo(Arrays.asList(problem)));
+                } else {
+                    assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+                }
+            }
+        }
+    }
+    
+    
+
 }
