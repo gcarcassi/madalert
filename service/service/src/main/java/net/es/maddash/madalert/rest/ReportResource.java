@@ -68,7 +68,7 @@ public class ReportResource {
 //            String output = resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(String.class);
             Mesh mesh = Mesh.from(Json.createReader(resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(InputStream.class)).readObject());
             Report report = reportRule.createReport(mesh);
-            return report.toJson();
+            return report.toJson().toString();
         } catch(Exception ex) {
             return "{ \"" + ex.getMessage() + "\" }";
         } finally {

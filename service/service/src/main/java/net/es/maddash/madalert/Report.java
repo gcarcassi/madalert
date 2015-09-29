@@ -24,8 +24,10 @@ public class Report {
     private final List<Problem> globalProblems = new ArrayList<>();
     private final int[] globalStats;
     private final Map<Integer, int[]> siteStats = new HashMap<>();
+    private final List<String> sites;
     
     Report(Mesh mesh) {
+        sites = mesh.getSites();
         globalStats = new int[mesh.nSeverityLevels()];
         for (int site = 0; site < mesh.getSites().size(); site++) {
             int[] newSiteStats = new int[mesh.nSeverityLevels()];
@@ -68,43 +70,46 @@ public class Report {
         return (siteProblems.get(site) == null) ? Collections.emptyList() : siteProblems.get(site);
     }
     
-    public String toJson() {
-        JsonObjectBuilder root = Json.createObjectBuilder();
-        JsonObjectBuilder globalSite = Json.createObjectBuilder();
+    private static void addStats(JsonObjectBuilder jsonSite, int[] stats) {
         JsonArrayBuilder jsonGlobalStats = Json.createArrayBuilder();
-        for (int i = 0; i < globalStats.length; i++) {
-            jsonGlobalStats.add(globalStats[i]);
+        for (int i = 0; i < stats.length; i++) {
+            jsonGlobalStats.add(stats[i]);
         }
-        globalSite.add("stats", jsonGlobalStats);
-        // TODO: add global stats
-        // TODO: add global severity
-//        globalSite = {"stats": self.stats.total, "severity": self.maxSeverityForSite()}
-        if (!getGlobalProblems().isEmpty()) {
+        jsonSite.add("stats", jsonGlobalStats);
+    }
+    
+    private static void addProblems(JsonObjectBuilder jsonSite, List<Problem> problems) {
+        if (problems != null && !problems.isEmpty()) {
             JsonArrayBuilder globalProblems = Json.createArrayBuilder();
-            for (Problem problem : getGlobalProblems()) {
+            for (Problem problem : problems) {
                 globalProblems.add(Json.createObjectBuilder()
                     .add("name", problem.getName())
                     .add("severity", problem.getSeverity())
                     .add("category", problem.getCategory()));
             }
-            globalSite.add("problems", globalProblems);
+            jsonSite.add("problems", globalProblems);
         }
+    }
+    
+    public JsonObject toJson() {
+        JsonObjectBuilder root = Json.createObjectBuilder();
+        JsonObjectBuilder globalSite = Json.createObjectBuilder();
+        addStats(globalSite, globalStats);
+        // TODO: add global severity
+//        globalSite = {"stats": self.stats.total, "severity": self.maxSeverityForSite()}
+        addProblems(globalSite, getGlobalProblems());
         root.add("global", globalSite);
 
-//        TODO: add sites
-//        nSites = len(self.data["columnNames"])
-//        for site in range(0, nSites):
-//            siteName = self.data["columnNames"][site].replace(" ", "_")
-//            newSite = {"stats": self.stats.site[site], "severity": self.maxSeverityForSite(site)}
-//            problems = self.siteProblems[site]
-//            if (len(problems) > 0):
-//                newSiteProblems = []
-//                for problem in range(0, len(problems)):
-//                    newSiteProblems.append({"name": problems[problem].name, "severity": problems[problem].severity, "category": problems[problem].category})
-//                newSite["problems"] = newSiteProblems
-//
-//            jsonReport["sites"][siteName] = newSite
-//        json.dump(jsonReport, out)    }
-        return root.build().toString();
+        JsonObjectBuilder jsonSites = Json.createObjectBuilder();
+        for (int site = 0; site < sites.size(); site++) {
+            String siteName = sites.get(site);
+            JsonObjectBuilder jsonSite = Json.createObjectBuilder();
+            addStats(jsonSite, siteStats.get(site));
+            // TODO: add max severity
+            addProblems(jsonSite, siteProblems.get(site));
+            jsonSites.add(siteName, jsonSite);
+        }
+        root.add("sites", jsonSites);
+        return root.build();
     }
 }
