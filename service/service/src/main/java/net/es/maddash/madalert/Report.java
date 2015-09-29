@@ -70,6 +70,14 @@ public class Report {
         return (siteProblems.get(site) == null) ? Collections.emptyList() : siteProblems.get(site);
     }
     
+    public int getGlobalMaxSeverity() {
+        return globalProblems.stream().mapToInt(p -> p.getSeverity()).max().orElse(0);
+    }
+    
+    public int getSiteMaxSeverity(int site) {
+        return getSiteProblems(site).stream().mapToInt(p -> p.getSeverity()).max().orElse(0);
+    }
+    
     private static void addStats(JsonObjectBuilder jsonSite, int[] stats) {
         JsonArrayBuilder jsonGlobalStats = Json.createArrayBuilder();
         for (int i = 0; i < stats.length; i++) {
@@ -95,8 +103,7 @@ public class Report {
         JsonObjectBuilder root = Json.createObjectBuilder();
         JsonObjectBuilder globalSite = Json.createObjectBuilder();
         addStats(globalSite, globalStats);
-        // TODO: add global severity
-//        globalSite = {"stats": self.stats.total, "severity": self.maxSeverityForSite()}
+        globalSite.add("severity", getGlobalMaxSeverity());
         addProblems(globalSite, getGlobalProblems());
         root.add("global", globalSite);
 
@@ -105,7 +112,7 @@ public class Report {
             String siteName = sites.get(site);
             JsonObjectBuilder jsonSite = Json.createObjectBuilder();
             addStats(jsonSite, siteStats.get(site));
-            // TODO: add max severity
+            jsonSite.add("severity", getSiteMaxSeverity(site));
             addProblems(jsonSite, siteProblems.get(site));
             jsonSites.add(siteName, jsonSite);
         }
