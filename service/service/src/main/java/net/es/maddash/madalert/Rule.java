@@ -20,15 +20,18 @@ public abstract class Rule {
         return report;
     }
 
-    abstract void addToReport(Report report, Mesh mesh);
+    abstract boolean addToReport(Report report, Mesh mesh);
     
     public static Rule rule(final TestSet testSet, final StatusMatcher matcher, final Problem problem) {
         return new Rule() {
 
             @Override
-            void addToReport(Report report, Mesh mesh) {
+            boolean addToReport(Report report, Mesh mesh) {
                 if (testSet.match(mesh, matcher)) {
                     report.addGlobalProblem(problem);
+                    return true;
+                } else {
+                    return false;
                 }
             }
             
@@ -39,13 +42,16 @@ public abstract class Rule {
         return new Rule() {
 
             @Override
-            void addToReport(Report report, Mesh mesh) {
+            boolean addToReport(Report report, Mesh mesh) {
+                boolean matched = false;
                 for (int site = 0; site < mesh.getSites().size(); site++) {
                     TestSet testSet = siteTestSet.site(site);
                     if (testSet.match(mesh, matcher)) {
                         report.addProblem(site, problem);
+                        matched = true;
                     }
                 }
+                return matched;
             }
         };
     }
@@ -58,10 +64,31 @@ public abstract class Rule {
         return new Rule() {
 
             @Override
-            void addToReport(Report report, Mesh mesh) {
+            boolean addToReport(Report report, Mesh mesh) {
+                boolean matched = false;
                 for (Rule rule : rules) {
-                    rule.addToReport(report, mesh);
+                    matched = rule.addToReport(report, mesh) || matched;
                 }
+                return matched;
+            }
+        };
+    }
+    
+    public static Rule matchFirst(Rule... rules) {
+        return matchFirst(Arrays.asList(rules));
+    }
+    
+    public static Rule matchFirst(final List<Rule> rules) {
+        return new Rule() {
+
+            @Override
+            boolean addToReport(Report report, Mesh mesh) {
+                for (Rule rule : rules) {
+                    if (rule.addToReport(report, mesh)) {
+                        return true;
+                    }
+                }
+                return false;
             }
         };
     }

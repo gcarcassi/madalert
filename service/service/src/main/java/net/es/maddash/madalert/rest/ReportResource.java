@@ -50,6 +50,52 @@ public class ReportResource {
     public static Rule reportRule = runAll(rule(forAllSites(), matchStatus(3), new Problem("Mesh is down", 3, "INFRASTRUCTURE")),
                                    siteRule(forSite(), matchStatus(3), new Problem("Site is down", 3, "INFRASTRUCTURE"))
                                   );
+    
+    /*
+    
+    Ruleset
+    
+    matchfirst
+        * all down
+        * all fine
+        * for each site
+            * matchfirst
+                * Site is down
+                * match all
+                    * matchfirst
+                        * site can't test
+                        * site mostly can't test
+                    * matchfirst 
+                        * site can't be tested
+                        * site can't mostly be tested
+                    * outgoing tests failure
+                    * incoming tests failure
+    
+        if (match_all_sites(self.data, 3)):
+            self.addProblem("All grid down", 2, "INFRASTRUCTURE")
+            return
+
+        if (match_all_sites(self.data, 0)):
+            self.addProblem("All is well", 0, "INFRASTRUCTURE")
+
+        nSites = len(self.data['columnNames'])
+        for site in range(0, nSites):
+            if (match_site(self.data, site, 3)):
+                self.addProblem("Site is down", 2, "INFRASTRUCTURE", site)
+            elif (match_initiated_by_site(self.data, site, 3)):
+                self.addProblem("Site can't test", 2, "INFRASTRUCTURE", site)
+            elif (match_initiated_on_site(self.data, site, 3)):
+                self.addProblem("Site can't be tested", 2, "INFRASTRUCTURE", site)
+            elif (match_initiated_by_site(self.data, site, 3, 0.70)):
+                self.addProblem("Site mostly can't test", 2, "INFRASTRUCTURE", site)
+            elif (match_initiated_on_site(self.data, site, 3, 0.70)):
+                self.addProblem("Site mostly can't be tested", 2, "INFRASTRUCTURE", site)
+            else:
+                if for_outgoing_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
+                    self.addProblem("Outgoing tests failure (" + self.data["statusLabels"][2] + ")", 2, "ACTUAL", site)
+                if for_incoming_from_site(site, self.data, match_weighted_status([0, 0.5, 1.0, -1.0], 0.7)):
+                    self.addProblem("Incoming tests failure (" + self.data["statusLabels"][2] + ")", 2, "ACTUAL", site)    
+     */
 
 
     /**

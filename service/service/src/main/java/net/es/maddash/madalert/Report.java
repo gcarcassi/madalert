@@ -70,6 +70,10 @@ public class Report {
         return (siteProblems.get(site) == null) ? Collections.emptyList() : siteProblems.get(site);
     }
     
+    public List<String> getSites() {
+        return sites;
+    }
+    
     public int getGlobalMaxSeverity() {
         return globalProblems.stream().mapToInt(p -> p.getSeverity()).max().orElse(0);
     }
