@@ -22,6 +22,30 @@ import javax.json.JsonObjectBuilder;
 public class Report {
     private final Map<Integer, List<Problem>> siteProblems = new HashMap<>();
     private final List<Problem> globalProblems = new ArrayList<>();
+    private final int[] globalStats;
+    private final Map<Integer, int[]> siteStats = new HashMap<>();
+    
+    Report(Mesh mesh) {
+        globalStats = new int[mesh.nSeverityLevels()];
+        for (int site = 0; site < mesh.getSites().size(); site++) {
+            int[] newSiteStats = new int[mesh.nSeverityLevels()];
+            for (int column = 0; column < mesh.getSites().size(); column++) {
+                if (column != site) {
+                    newSiteStats[mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_ROW)]++;
+                    newSiteStats[mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                }
+            }
+            for (int row = 0; row < mesh.getSites().size(); row++) {
+                if (row != site) {
+                    newSiteStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_ROW)]++;
+                    newSiteStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                    globalStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_ROW)]++;
+                    globalStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                }
+            }
+            siteStats.put(site, newSiteStats);
+        }
+    }
     
     void addProblem(int site, Problem problem) {
         List<Problem> problems = siteProblems.get(site);
@@ -47,6 +71,11 @@ public class Report {
     public String toJson() {
         JsonObjectBuilder root = Json.createObjectBuilder();
         JsonObjectBuilder globalSite = Json.createObjectBuilder();
+        JsonArrayBuilder jsonGlobalStats = Json.createArrayBuilder();
+        for (int i = 0; i < globalStats.length; i++) {
+            jsonGlobalStats.add(globalStats[i]);
+        }
+        globalSite.add("stats", jsonGlobalStats);
         // TODO: add global stats
         // TODO: add global severity
 //        globalSite = {"stats": self.stats.total, "severity": self.maxSeverityForSite()}

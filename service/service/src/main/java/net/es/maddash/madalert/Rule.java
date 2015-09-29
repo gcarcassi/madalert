@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class Rule {
     
     public Report createReport(Mesh mesh) {
-        Report report = new Report();
+        Report report = new Report(mesh);
         addToReport(report, mesh);
         return report;
     }

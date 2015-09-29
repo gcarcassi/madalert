@@ -38,6 +38,11 @@ public class Mesh {
         return JsonUtil.toListString(jObj.getJsonArray("columnNames"));
     }
     
+    public int nSeverityLevels() {
+        // TODO: get it from the mesh
+        return 4;
+    }
+    
     public int statusFor(int row, int column, CellHalf half) {
         return jObj.getJsonArray("grid").getJsonArray(row).getJsonArray(column).getJsonObject(half.getIndex()).getInt("status");
     }
