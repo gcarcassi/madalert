@@ -68,12 +68,24 @@ public class Madalert {
         };
     }
     
-    public static SiteRule rule(final SiteTestSet testSet, final StatusMatcher matcher, final Problem problem) {
+    public static SiteRule rule(final SiteTestSet siteTestSet, final StatusMatcher matcher, final Problem problem) {
         return new SiteRule() {
 
             @Override
             Rule site(int site) {
-                return Rule.rule(testSet.site(site), matcher, problem);
+                return new Rule() {
+
+                    @Override
+                    boolean addToReport(Report report, Mesh mesh) {
+                        TestSet testSet = siteTestSet.site(site);
+                        if (testSet.match(mesh, matcher)) {
+                            report.addProblem(site, problem);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                };
             }
             
         };
@@ -87,7 +99,7 @@ public class Madalert {
                 boolean matched = false;
                 for (int site = 0; site < mesh.getSites().size(); site++) {
                     Rule rule = siteRule.site(site);
-                    matched = matched || rule.addToReport(report, mesh);
+                    matched = rule.addToReport(report, mesh) || matched;
                 }
                 return matched;
             }

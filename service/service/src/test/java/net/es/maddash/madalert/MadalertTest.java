@@ -37,4 +37,34 @@ public class MadalertTest {
         }
     }
 
+    @Test
+    public void defaultRule2() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allMissing.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Report report = Madalert.defaultRule().createReport(mesh);
+            assertThat(report.getGlobalProblems().size(), equalTo(1));
+            assertThat(report.getGlobalProblems().get(0), equalTo(new Problem("Grid is down", 3, Madalert.INFRASTRUCTURE)));
+            for (int i = 0; i < report.getSites().size(); i++) {
+                assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+            }
+        }
+    }
+
+    @Test
+    public void defaultRule3() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site2CantTest.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Report report = Madalert.defaultRule().createReport(mesh);
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int i = 0; i < report.getSites().size(); i++) {
+                if (i == 2) {
+                    assertThat(report.getSiteProblems(i).size(), equalTo(1));
+                    assertThat(report.getSiteProblems(i).get(0), equalTo(new Problem("Site can't test", 3, Madalert.INFRASTRUCTURE)));
+                } else {
+                    assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+                }
+            }
+        }
+    }
+
 }
