@@ -62,13 +62,20 @@ public class ReportResource {
         WebTarget webTarget;
         Client client = null;
         try {
+            long start = System.nanoTime();
             client = javax.ws.rs.client.ClientBuilder.newClient();
             webTarget = client.target(jsonUrl);
+            long phase1 = System.nanoTime();
             WebTarget resource = webTarget;
 //            String output = resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(String.class);
             Mesh mesh = Mesh.from(Json.createReader(resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(InputStream.class)).readObject());
+            long phase2 = System.nanoTime();
             Report report = reportRule.createReport(mesh);
-            return report.toJson().toString();
+            long phase3 = System.nanoTime();
+            String output = report.toJson().toString();
+            long end = System.nanoTime();
+            System.out.println("TIMING: " + (phase1 - start) + " - " + (phase2 - phase1) + " - " + (phase3 - phase2) + " - " + (end - phase3));
+            return output;
         } catch(Exception ex) {
             return "{ \"" + ex.getMessage() + "\" }";
         } finally {
