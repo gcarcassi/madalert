@@ -67,4 +67,72 @@ public class MadalertTest {
         }
     }
 
+    @Test
+    public void defaultRule4() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site2MostlyCantTest.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Report report = Madalert.defaultRule().createReport(mesh);
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int i = 0; i < report.getSites().size(); i++) {
+                if (i == 2) {
+                    assertThat(report.getSiteProblems(i).size(), equalTo(1));
+                    assertThat(report.getSiteProblems(i).get(0), equalTo(new Problem("Site mostly can't test", 3, Madalert.INFRASTRUCTURE)));
+                } else {
+                    assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void defaultRule5() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site3Down.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Report report = Madalert.defaultRule().createReport(mesh);
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int i = 0; i < report.getSites().size(); i++) {
+                if (i == 3) {
+                    assertThat(report.getSiteProblems(i).size(), equalTo(1));
+                    assertThat(report.getSiteProblems(i).get(0), equalTo(new Problem("Site is down", 3, Madalert.INFRASTRUCTURE)));
+                } else {
+                    assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void defaultRule6() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site4CantBeTested.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Report report = Madalert.defaultRule().createReport(mesh);
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int i = 0; i < report.getSites().size(); i++) {
+                if (i == 4) {
+                    assertThat(report.getSiteProblems(i).size(), equalTo(1));
+                    assertThat(report.getSiteProblems(i).get(0), equalTo(new Problem("Site can't be tested", 3, Madalert.INFRASTRUCTURE)));
+                } else {
+                    assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void defaultRule7() {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site4MostlyCantBeTested.json"))) {
+            Mesh mesh = Mesh.from(reader.readObject());
+            Report report = Madalert.defaultRule().createReport(mesh);
+            assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
+            for (int i = 0; i < report.getSites().size(); i++) {
+                if (i == 4) {
+                    assertThat(report.getSiteProblems(i).size(), equalTo(1));
+                    assertThat(report.getSiteProblems(i).get(0), equalTo(new Problem("Site mostly can't be tested", 3, Madalert.INFRASTRUCTURE)));
+                } else {
+                    assertThat(report.getSiteProblems(i).isEmpty(), equalTo(true));
+                }
+            }
+        }
+    }
+
 }
