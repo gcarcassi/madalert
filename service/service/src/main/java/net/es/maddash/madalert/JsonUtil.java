@@ -10,10 +10,18 @@ import java.util.List;
 import javax.json.JsonArray;
 
 /**
+ * Minor utility methods to marshal/unmarshal JSON.
  *
  * @author carcassi
  */
-public class JsonUtil {
+class JsonUtil {
+    
+    /**
+     * Adapts a JSON array to a Java List.
+     * 
+     * @param array a non-null JSON array
+     * @return the content as a List
+     */
     public static List<String> toListString(JsonArray array) {
         return new AbstractList<String>() {
 

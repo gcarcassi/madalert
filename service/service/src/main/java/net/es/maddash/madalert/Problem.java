@@ -8,6 +8,7 @@ package net.es.maddash.madalert;
 import java.util.Objects;
 
 /**
+ * A potential problem that may be included in the report.
  *
  * @author carcassi
  */

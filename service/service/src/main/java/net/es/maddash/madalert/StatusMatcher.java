@@ -6,6 +6,7 @@
 package net.es.maddash.madalert;
 
 /**
+ * A set of conditions that can be verified on a set of test results.
  *
  * @author carcassi
  */

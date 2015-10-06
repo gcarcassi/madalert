@@ -6,7 +6,7 @@
 package net.es.maddash.madalert;
 
 /**
- * A set of tests on a site
+ * A set of tests on a site.
  *
  * @author carcassi
  */

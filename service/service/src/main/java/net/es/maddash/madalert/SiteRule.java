@@ -6,6 +6,7 @@
 package net.es.maddash.madalert;
 
 /**
+ * A rule that can be applied to a site on the mesh.
  *
  * @author carcassi
  */

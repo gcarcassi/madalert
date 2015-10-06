@@ -5,7 +5,6 @@
  */
 package net.es.maddash.madalert;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 /**
+ * The result of a Madalert analysis.
  *
  * @author carcassi
  */

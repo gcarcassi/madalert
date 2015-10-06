@@ -9,14 +9,21 @@ import java.util.List;
 import javax.json.JsonObject;
 
 /**
+ * A mesh.
+ * <p>
+ * The actual data of the mash is represented internally by one of the JSON
+ * specifications. This class provides JSON to Java bindings and other
+ * view-like functionality.
  *
  * @author carcassi
  */
 public class Mesh {
     
+    // XXX: given that not all meshes have split cells, we may have to
+    // rethink this
     public static enum CellHalf {INITIATED_BY_ROW(0), INITIATED_BY_COLUMN(1);
 
-        private int index;
+        private final int index;
 
         private CellHalf(int index) {
             this.index = index;

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Madalert library, provides fluent API for matching problematic patterns on
+ * MadDash.
  *
  * @author carcassi
  */
@@ -17,7 +19,10 @@ public class Madalert {
     public static final String INFRASTRUCTURE = "INFRASTRUCTURE";
     public static final String ACTUAL = "ACTUAL";
     
-    
+    private Madalert() {
+        // Prevent creation
+    }
+        
     public static Rule defaultRule() {
         return matchFirst(
                           rule(forAllSites(), matchStatus(3), new Problem("Grid is down", 3, INFRASTRUCTURE)),
@@ -34,22 +39,6 @@ public class Madalert {
                                                                      rule(forInitiatedOnSite(), matchStatus(3, 0.7), new Problem("Site mostly can't be tested", 3, INFRASTRUCTURE))),
                                                           rule(forSiteOutgoing(), matchStatus(new double[]{0.0, 0.5, 1.0, -1.0}, 0.7), new Problem("Outgoing test failures", 2, ACTUAL)),
                                                           rule(forSiteIncoming(), matchStatus(new double[]{0.0, 0.5, 1.0, -1.0}, 0.7), new Problem("Incoming test failures", 2, ACTUAL))))));
-//    matchfirst
-//        * all down
-//        * all fine
-//        * for each site
-//            * matchfirst
-//                * Site is down
-//                * match all
-//                    * matchfirst
-//                        * site can't test
-//                        * site mostly can't test
-//                    * matchfirst 
-//                        * site can't be tested
-//                        * site can't mostly be tested
-//                    * outgoing tests failure
-//                    * incoming tests failure
-        
     }
     
     public static Rule rule(final TestSet testSet, final StatusMatcher matcher, final Problem problem) {
