@@ -97,10 +97,16 @@
         <!-- Bootstrap -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script type="text/javascript">
-            jQuery(document).ready(function() {
+
+function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
+    jQuery(document).ready(function() {
     var selText = $(this).text();
     $.ajax({
-        url: 'http://localhost:8080/madalert/resources/report?json=http://psmad.grid.iu.edu/maddash/grids/Latency+tests+between+all+WLCG+hosts+-+Latency+Tests+Between+WLCG+Latency+Hosts',
+        url: 'http://localhost:8080/madalert/resources/report?json=' +getURLParameter("json"),
+//        url: 'http://localhost:8080/madalert/resources/report?json=http://psmad.grid.iu.edu/maddash/grids/Latency+tests+between+all+WLCG+hosts+-+Latency+Tests+Between+WLCG+Latency+Hosts',
         
         crossDomain: true,
         dataType: 'json'
