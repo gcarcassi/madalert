@@ -92,16 +92,4 @@ public abstract class Rule {
             }
         };
     }
-    
-    public static SiteTestSet forSite() {
-        return SiteTestSet.forSite();
-    }
-    
-    public static SiteTestSet forInitiatedBySite() {
-        return SiteTestSet.forInitiatedBySite();
-    }
-    
-    public static SiteTestSet forInitiatedOnSite() {
-        return SiteTestSet.forInitiatedOnSite();
-    }
 }
