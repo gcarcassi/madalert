@@ -40,24 +40,6 @@ public abstract class Rule {
         };
     }
     
-    public static Rule runAll(Rule... rules) {
-        return runAll(Arrays.asList(rules));
-    }
-    
-    public static Rule runAll(final List<Rule> rules) {
-        return new Rule() {
-
-            @Override
-            boolean addToReport(Report report, Mesh mesh) {
-                boolean matched = false;
-                for (Rule rule : rules) {
-                    matched = rule.addToReport(report, mesh) || matched;
-                }
-                return matched;
-            }
-        };
-    }
-    
     public static Rule matchFirst(Rule... rules) {
         return matchFirst(Arrays.asList(rules));
     }

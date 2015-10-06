@@ -121,8 +121,8 @@ public class RuleTest {
             Mesh mesh = Mesh.from(reader.readObject());
             Problem globalProblem = new Problem("Mesh is down", 3, "INFRASTRUCTURE");
             Problem siteProblem = new Problem("Site is down", 3, "INFRASTRUCTURE");
-            Report report = Rule.runAll(rule(forAllSites(), matchStatus(3), globalProblem),
-                                   Rule.siteRule(forSite(), matchStatus(3), siteProblem)
+            Report report = matchAll(rule(forAllSites(), matchStatus(3), globalProblem),
+                                   forEachSite(rule(forSite(), matchStatus(3), siteProblem))
                                   ).createReport(mesh);
             
             assertThat(report.getGlobalProblems(), equalTo(Arrays.asList(globalProblem)));

@@ -130,11 +130,29 @@ public class Madalert {
 
             @Override
             Rule site(int site) {
-                return Rule.runAll(Arrays.asList(siteRules).stream()
+                return matchAll(Arrays.asList(siteRules).stream()
                         .map(s -> s.site(site))
                         .collect(Collectors.toList()));
             }
             
+        };
+    }
+    
+    public static Rule matchAll(Rule... rules) {
+        return matchAll(Arrays.asList(rules));
+    }
+    
+    public static Rule matchAll(final List<Rule> rules) {
+        return new Rule() {
+
+            @Override
+            boolean addToReport(Report report, Mesh mesh) {
+                boolean matched = false;
+                for (Rule rule : rules) {
+                    matched = rule.addToReport(report, mesh) || matched;
+                }
+                return matched;
+            }
         };
     }
     
