@@ -105,10 +105,6 @@ public abstract class Rule {
         return StatusMatcher.matchStatus(weights, threshold);
     }
     
-    public static TestSet forAllSites() {
-        return TestSet.forAllSites();
-    }
-    
     public static SiteTestSet forSite() {
         return SiteTestSet.forSite();
     }

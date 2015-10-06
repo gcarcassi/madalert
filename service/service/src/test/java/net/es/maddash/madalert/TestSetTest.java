@@ -30,6 +30,7 @@ public class TestSetTest {
     public void allSites() {
         Mesh mesh = mock(Mesh.class);
         when(mesh.getSites()).thenReturn(Arrays.asList("A", "B", "C", "D"));
+        when(mesh.isSplitCell()).thenReturn(true);
         for (int row = 0; row < 4; row++) {
             for (int column = 0; column < 4; column++) {
                 when(mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW))
@@ -44,7 +45,7 @@ public class TestSetTest {
         StatusMatcher statusMatcher = mock(StatusMatcher.class);
         when(statusMatcher.prepareInstance(mesh)).thenReturn(instance);
         
-        TestSet testSet = TestSet.forAllSites();
+        TestSet testSet = Madalert.forAllSites();
         
         testSet.match(mesh, statusMatcher);
         InOrder order = inOrder(instance);

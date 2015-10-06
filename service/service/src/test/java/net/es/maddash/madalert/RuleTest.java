@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.mockito.InOrder;
 import static org.mockito.Mockito.*;
-import static net.es.maddash.madalert.Rule.*;
+import static net.es.maddash.madalert.Madalert.*;
 
 /**
  *
@@ -31,7 +31,7 @@ public class RuleTest {
     public void allSites() {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allWell.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
-            TestSet testSet = Rule.forAllSites();
+            TestSet testSet = forAllSites();
             assertThat(testSet.match(mesh, Rule.matchStatus(0)), equalTo(true));
             assertThat(testSet.match(mesh, Rule.matchStatus(3)), equalTo(false));
         }
@@ -121,8 +121,8 @@ public class RuleTest {
             Mesh mesh = Mesh.from(reader.readObject());
             Problem globalProblem = new Problem("Mesh is down", 3, "INFRASTRUCTURE");
             Problem siteProblem = new Problem("Site is down", 3, "INFRASTRUCTURE");
-            Report report = runAll(rule(forAllSites(), matchStatus(3), globalProblem),
-                                   siteRule(forSite(), matchStatus(3), siteProblem)
+            Report report = Rule.runAll(rule(forAllSites(), matchStatus(3), globalProblem),
+                                   Rule.siteRule(forSite(), matchStatus(3), siteProblem)
                                   ).createReport(mesh);
             
             assertThat(report.getGlobalProblems(), equalTo(Arrays.asList(globalProblem)));
