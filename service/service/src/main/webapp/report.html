@@ -49,8 +49,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1>Madalert Report</h1>
-                        <p>Mesh name: Latency tests between all WLCG hosts - Latency Tests Between WLCG Latency Hosts</p>
-                        <p>Mesh location: <a href="http://maddash.aglt2.org/maddash/grids/Latency tests between all WLCG hosts - Latency Tests Between WLCG Latency Hosts">http://maddash.aglt2.org/maddash/grids/Latency tests between all WLCG hosts - Latency Tests Between WLCG Latency Hosts</a></p>
+                        <p>Mesh name: <span id="mesh_name"></span></p>
+                        <p>Mesh location: <span id="mesh_location"></span></p>
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
@@ -106,15 +106,16 @@ function getURLParameter(name) {
     var selText = $(this).text();
     $.ajax({
         url: document.location.protocol + '//' + document.location.host + '/madalert/resources/report?json=' +getURLParameter("json"),
-//        url: 'http://localhost:8080/madalert/resources/report?json=http://psmad.grid.iu.edu/maddash/grids/Latency+tests+between+all+WLCG+hosts+-+Latency+Tests+Between+WLCG+Latency+Hosts',
         
         crossDomain: true,
         dataType: 'json'
     }).done(function(data) {
-//        alert(data["sites"]);
         var sites_infrastructure_list = [];
         var sites_actual_list = [];
-//        alert("done");
+        $("<b>"+data["mesh"]["name"]+"</b>").appendTo('#mesh_name');
+        if (data["mesh"]["location"]) {
+            $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_location');
+        }
 
         $.each(data.sites, function(key, val) {
             var infrastructure_problems;
