@@ -115,7 +115,7 @@ public class ReportResource {
             long phase1 = System.nanoTime();
             WebTarget resource = webTarget;
 //            String output = resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(String.class);
-            Mesh mesh = Mesh.from(Json.createReader(resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(InputStream.class)).readObject());
+            Mesh mesh = Mesh.from(Json.createReader(resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(InputStream.class)).readObject(), jsonUrl);
             long phase2 = System.nanoTime();
             Report report = Madalert.defaultRule().createReport(mesh);
             long phase3 = System.nanoTime();

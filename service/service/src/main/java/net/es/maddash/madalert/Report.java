@@ -5,6 +5,7 @@
  */
 package net.es.maddash.madalert;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,8 +26,12 @@ public class Report {
     private final int[] globalStats;
     private final Map<Integer, int[]> siteStats = new HashMap<>();
     private final List<String> sites;
+    private final String meshName;
+    private final String meshLocation;
     
     Report(Mesh mesh) {
+        meshName = mesh.getName();
+        meshLocation = mesh.getLocation();
         sites = mesh.getSites();
         globalStats = new int[mesh.nSeverityLevels()];
         for (int site = 0; site < mesh.getSites().size(); site++) {
@@ -109,6 +114,12 @@ public class Report {
     
     public JsonObject toJson() {
         JsonObjectBuilder root = Json.createObjectBuilder();
+        JsonObjectBuilder mesh = Json.createObjectBuilder();
+        mesh.add("name", meshName);
+        if (meshLocation != null) {
+            mesh.add("location", meshLocation);
+        }
+        root.add("mesh", mesh);
         JsonObjectBuilder globalSite = Json.createObjectBuilder();
         addStats(globalSite, globalStats);
         globalSite.add("severity", getGlobalMaxSeverity());

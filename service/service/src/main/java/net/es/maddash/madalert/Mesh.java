@@ -29,9 +29,11 @@ public class Mesh {
     };
     
     private final JsonObject jObj;
+    private final String meshLocation;
 
-    private Mesh(JsonObject jObj) {
+    private Mesh(JsonObject jObj, String meshLocation) {
         this.jObj = jObj;
+        this.meshLocation = meshLocation;
     }
     
     public boolean isSplitCell() {
@@ -40,6 +42,14 @@ public class Mesh {
     
     public List<String> getSites() {
         return JsonUtil.toListString(jObj.getJsonArray("columnNames"));
+    }
+
+    public String getLocation() {
+        return meshLocation;
+    }
+    
+    public String getName() {
+        return jObj.getString("name");
     }
     
     public int nSeverityLevels() {
@@ -52,6 +62,10 @@ public class Mesh {
     }
     
     public static Mesh from(JsonObject jObj) {
-        return new Mesh(jObj);
+        return new Mesh(jObj, null);
+    }
+    
+    public static Mesh from(JsonObject jObj, String meshLocation) {
+        return new Mesh(jObj, meshLocation);
     }
 }
