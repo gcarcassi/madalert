@@ -34,6 +34,10 @@ public class Mesh {
         this.jObj = jObj;
     }
     
+    public boolean isSplitCell() {
+        return jObj.getJsonArray("grid").getJsonArray(0).getJsonArray(1).size() != 1;
+    }
+    
     public List<String> getSites() {
         return JsonUtil.toListString(jObj.getJsonArray("columnNames"));
     }

@@ -34,15 +34,19 @@ public class Report {
             for (int column = 0; column < mesh.getSites().size(); column++) {
                 if (column != site) {
                     newSiteStats[mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_ROW)]++;
-                    newSiteStats[mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                    if (mesh.isSplitCell()) {
+                        newSiteStats[mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                    }
                 }
             }
             for (int row = 0; row < mesh.getSites().size(); row++) {
                 if (row != site) {
                     newSiteStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_ROW)]++;
-                    newSiteStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
                     globalStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_ROW)]++;
-                    globalStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                    if (mesh.isSplitCell()) {
+                        newSiteStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                        globalStats[mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN)]++;
+                    }
                 }
             }
             siteStats.put(site, newSiteStats);

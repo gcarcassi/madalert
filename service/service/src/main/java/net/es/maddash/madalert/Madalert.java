@@ -163,8 +163,10 @@ public class Madalert {
                         if (column != row) {
                             instance.match(row, column, Mesh.CellHalf.INITIATED_BY_ROW,
                                     mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW));
-                            instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
-                                    mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                            if (mesh.isSplitCell()) {
+                                instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
+                                        mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                            }
                         }
                     }
                 }
@@ -269,8 +271,10 @@ public class Madalert {
                                 if (column != row && (column == site || row == site)) {
                                     instance.match(row, column, Mesh.CellHalf.INITIATED_BY_ROW,
                                             mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW));
-                                    instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
-                                            mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                    if (mesh.isSplitCell()) {
+                                        instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
+                                                mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                    }
                                 }
                             }
                         }
@@ -300,8 +304,10 @@ public class Madalert {
                                                 mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW));
                                     }
                                     if (column == site) {
-                                        instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
-                                                mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                        if (mesh.isSplitCell()) {
+                                            instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
+                                                    mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                        }
                                     }
                                 }
                             }
@@ -328,8 +334,10 @@ public class Madalert {
                             for (int row = 0; row < nSites; row++) {
                                 if (column != row) {
                                     if (row == site) {
-                                        instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
-                                                mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                        if (mesh.isSplitCell()) {
+                                            instance.match(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
+                                                    mesh.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                        }
                                     }
                                     if (column == site) {
                                         instance.match(row, column, Mesh.CellHalf.INITIATED_BY_ROW,
@@ -358,8 +366,10 @@ public class Madalert {
                         StatusMatcher.Instance instance = matcher.prepareInstance(mesh);
                         for (int column = 0; column < nSites; column++) {
                             if (column != site) {
-                                instance.match(site, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
-                                        mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                if (mesh.isSplitCell()) {
+                                    instance.match(site, column, Mesh.CellHalf.INITIATED_BY_COLUMN,
+                                            mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                }
                                 instance.match(site, column, Mesh.CellHalf.INITIATED_BY_ROW,
                                         mesh.statusFor(site, column, Mesh.CellHalf.INITIATED_BY_ROW));
                             }
@@ -384,8 +394,10 @@ public class Madalert {
                         StatusMatcher.Instance instance = matcher.prepareInstance(mesh);
                         for (int row = 0; row < nSites; row++) {
                             if (row != site) {
-                                instance.match(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN,
-                                        mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                if (mesh.isSplitCell()) {
+                                    instance.match(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN,
+                                            mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_COLUMN));
+                                }
                                 instance.match(row, site, Mesh.CellHalf.INITIATED_BY_ROW,
                                         mesh.statusFor(row, site, Mesh.CellHalf.INITIATED_BY_ROW));
                             }
