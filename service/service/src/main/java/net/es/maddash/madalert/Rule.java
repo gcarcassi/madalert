@@ -93,18 +93,6 @@ public abstract class Rule {
         };
     }
     
-    public static StatusMatcher matchStatus(int status) {
-        return StatusMatcher.matchStatus(status);
-    }
-    
-    public static StatusMatcher matchStatus(int status, double threshold) {
-        return StatusMatcher.matchStatus(status, threshold);
-    }
-    
-    public static StatusMatcher matchStatus(double[] weights, double threshold) {
-        return StatusMatcher.matchStatus(weights, threshold);
-    }
-    
     public static SiteTestSet forSite() {
         return SiteTestSet.forSite();
     }

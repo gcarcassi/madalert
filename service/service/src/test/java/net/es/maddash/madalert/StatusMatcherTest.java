@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import static net.es.maddash.madalert.Madalert.*;
 
 /**
  *
@@ -28,7 +29,7 @@ public class StatusMatcherTest {
     public void matchStatus1() {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site2CantTest.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
-            StatusMatcher matcher = StatusMatcher.matchStatus(3);
+            StatusMatcher matcher = matchStatus(3);
             StatusMatcher.Instance instance = matcher.prepareInstance(mesh);
             assertThat(instance.isMatched(), equalTo(true));
             instance.match(0, 1, Mesh.CellHalf.INITIATED_BY_ROW, 3);
@@ -44,7 +45,7 @@ public class StatusMatcherTest {
     public void matchStatus2() {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site2CantTest.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
-            StatusMatcher matcher = StatusMatcher.matchStatus(3, 0.7);
+            StatusMatcher matcher = matchStatus(3, 0.7);
             StatusMatcher.Instance instance = matcher.prepareInstance(mesh);
             assertThat(instance.isMatched(), equalTo(true));
             instance.match(0, 1, Mesh.CellHalf.INITIATED_BY_ROW, 3);

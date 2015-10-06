@@ -32,8 +32,8 @@ public class RuleTest {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allWell.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
             TestSet testSet = forAllSites();
-            assertThat(testSet.match(mesh, Rule.matchStatus(0)), equalTo(true));
-            assertThat(testSet.match(mesh, Rule.matchStatus(3)), equalTo(false));
+            assertThat(testSet.match(mesh, matchStatus(0)), equalTo(true));
+            assertThat(testSet.match(mesh, matchStatus(3)), equalTo(false));
         }
     }
 
@@ -41,8 +41,8 @@ public class RuleTest {
     public void site3Down() {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site3Down.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
-            assertThat(Rule.forSite().site(3).match(mesh, Rule.matchStatus(3)), equalTo(true));
-            assertThat(Rule.forSite().site(2).match(mesh, Rule.matchStatus(3)), equalTo(false));
+            assertThat(Rule.forSite().site(3).match(mesh, matchStatus(3)), equalTo(true));
+            assertThat(Rule.forSite().site(2).match(mesh, matchStatus(3)), equalTo(false));
         }
     }
 
@@ -50,8 +50,8 @@ public class RuleTest {
     public void site2CantTest() {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site2CantTest.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
-            assertThat(Rule.forInitiatedBySite().site(2).match(mesh, Rule.matchStatus(3)), equalTo(true));
-            assertThat(Rule.forInitiatedOnSite().site(2).match(mesh, Rule.matchStatus(3)), equalTo(false));
+            assertThat(Rule.forInitiatedBySite().site(2).match(mesh, matchStatus(3)), equalTo(true));
+            assertThat(Rule.forInitiatedOnSite().site(2).match(mesh, matchStatus(3)), equalTo(false));
         }
     }
 
