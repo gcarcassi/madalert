@@ -1,10 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>Start Page</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Madalert report</title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
     </head>
-    <body>
-        <h1>Hello World!</h1>
+
+    <body style="padding-top: 50px">
+        <!-- Navigation bar -->
+        <!-- ============== -->
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand">Madalert</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="http://maddash.aglt2.org/cgi-bin/report"><i class="fa fa-check-square-o  fa-fw"></i>&nbsp; Report</a></li>
+                        <li><a href="https://github.com/gcarcassi/madalert"><i class="fa fa-github fa-fw"></i>&nbsp; GitHub</a></li>
+                        <li><a href="https://github.com/gcarcassi/madalert/wiki"><i class="fa fa-book fa-fw"></i>&nbsp; Wiki</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+
+
+        <div class="featurette gray">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>Madalert Report</h1>
+                        <p>Madalert analyzes a mesh to find problematic patterns. Here are some examples:</p>
+                        <ul>
+                            <li><b>Latency tests between all WLCG hosts Dashboard (psmad.grid.iu.edu)</b>: <a href="http://psmad.grid.iu.edu/maddash-webui/index.cgi?dashboard=Latency%20tests%20between%20all%20WLCG%20hosts">Mesh</a> - <a href="http://madalert.aglt2.org/madalert/report.html?json=http://psmad.grid.iu.edu/maddash/grids/Latency+tests+between+all+WLCG+hosts+-+Latency+Tests+Between+WLCG+Latency+Hosts">Report</a></li>
+                            <li><b>Latency tests between all WLCG hosts Dashboard (maddash.aglt2.org)</b>: <a href="http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=Latency%20tests%20between%20all%20WLCG%20hosts">Mesh</a> - <a href="http://madalert.aglt2.org/madalert/report.html?json=http://maddash.aglt2.org/maddash/grids/Latency+tests+between+all+WLCG+hosts+-+Latency+Tests+Between+WLCG+Latency+Hosts">Report</a></li>
+                            <li><b>USATLAS Mesh Config</b>: <a href="http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=USATLAS%20Mesh%20Config">Mesh</a> - <a href="http://madalert.aglt2.org/madalert/report.html?json=http://maddash.aglt2.org/maddash/grids/USATLAS+Mesh+Config+-+USATLAS+Bandwidth+Mesh+Test">Report</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placed at the end of the document so the pages load faster -->
+        <!-- JQuery -->
+        <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     </body>
 </html>
