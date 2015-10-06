@@ -60,7 +60,7 @@ public class RuleTest {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allWell.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
             Problem problem = new Problem("Grid is down", 3, "INFRASTRUCTURE");
-            Report report = Rule.rule(forAllSites(), matchStatus(3), problem).createReport(mesh);
+            Report report = rule(forAllSites(), matchStatus(3), problem).createReport(mesh);
             
             assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
             for (int i = 0; i < mesh.getSites().size(); i++) {
@@ -74,7 +74,7 @@ public class RuleTest {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allMissing.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
             Problem problem = new Problem("Grid is down", 3, "INFRASTRUCTURE");
-            Report report = Rule.rule(forAllSites(), matchStatus(3), problem).createReport(mesh);
+            Report report = rule(forAllSites(), matchStatus(3), problem).createReport(mesh);
             
             assertThat(report.getGlobalProblems(), equalTo(Arrays.asList(problem)));
             for (int i = 0; i < mesh.getSites().size(); i++) {
@@ -88,7 +88,7 @@ public class RuleTest {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("allMissing.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
             Problem problem = new Problem("Site is down", 3, "INFRASTRUCTURE");
-            Report report = Rule.siteRule(forSite(), matchStatus(3), problem).createReport(mesh);
+            Report report = forEachSite(rule(forSite(), matchStatus(3), problem)).createReport(mesh);
             
             assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
             for (int site = 0; site < mesh.getSites().size(); site++) {
@@ -102,7 +102,7 @@ public class RuleTest {
         try (JsonReader reader = Json.createReader(getClass().getResourceAsStream("site3Down.json"))) {
             Mesh mesh = Mesh.from(reader.readObject());
             Problem problem = new Problem("Site is down", 3, "INFRASTRUCTURE");
-            Report report = Rule.siteRule(forSite(), matchStatus(3), problem).createReport(mesh);
+            Report report = forEachSite(rule(forSite(), matchStatus(3), problem)).createReport(mesh);
             
             assertThat(report.getGlobalProblems().isEmpty(), equalTo(true));
             for (int site = 0; site < mesh.getSites().size(); site++) {

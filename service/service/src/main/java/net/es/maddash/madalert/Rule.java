@@ -22,22 +22,6 @@ public abstract class Rule {
 
     abstract boolean addToReport(Report report, Mesh mesh);
     
-    public static Rule rule(final TestSet testSet, final StatusMatcher matcher, final Problem problem) {
-        return new Rule() {
-
-            @Override
-            boolean addToReport(Report report, Mesh mesh) {
-                if (testSet.match(mesh, matcher)) {
-                    report.addGlobalProblem(problem);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            
-        };
-    }
-    
     public static Rule siteRule(final SiteTestSet siteTestSet, final StatusMatcher matcher, final Problem problem) {
         return new Rule() {
 
