@@ -5,9 +5,6 @@
  */
 package net.es.maddash.madalert;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  *
  * @author carcassi
@@ -22,40 +19,4 @@ public abstract class Rule {
 
     abstract boolean addToReport(Report report, Mesh mesh);
     
-    public static Rule siteRule(final SiteTestSet siteTestSet, final StatusMatcher matcher, final Problem problem) {
-        return new Rule() {
-
-            @Override
-            boolean addToReport(Report report, Mesh mesh) {
-                boolean matched = false;
-                for (int site = 0; site < mesh.getSites().size(); site++) {
-                    TestSet testSet = siteTestSet.site(site);
-                    if (testSet.match(mesh, matcher)) {
-                        report.addProblem(site, problem);
-                        matched = true;
-                    }
-                }
-                return matched;
-            }
-        };
-    }
-    
-    public static Rule matchFirst(Rule... rules) {
-        return matchFirst(Arrays.asList(rules));
-    }
-    
-    public static Rule matchFirst(final List<Rule> rules) {
-        return new Rule() {
-
-            @Override
-            boolean addToReport(Report report, Mesh mesh) {
-                for (Rule rule : rules) {
-                    if (rule.addToReport(report, mesh)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        };
-    }
 }

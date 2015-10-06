@@ -5,9 +5,6 @@
  */
 package net.es.maddash.madalert;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  *
  * @author carcassi

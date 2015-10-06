@@ -11,5 +11,7 @@ package net.es.maddash.madalert;
  * @author carcassi
  */
 public abstract class SiteTestSet {
+    
     abstract TestSet site(int site);
+    
 }

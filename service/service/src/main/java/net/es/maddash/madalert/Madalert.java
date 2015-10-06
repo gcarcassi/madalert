@@ -125,12 +125,12 @@ public class Madalert {
         };
     }
     
-    public static SiteRule matchAll(final SiteRule... siteRules) {
+    public static SiteRule matchFirst(final SiteRule... siteRules) {
         return new SiteRule() {
 
             @Override
             Rule site(int site) {
-                return matchAll(Arrays.asList(siteRules).stream()
+                return matchFirst(Arrays.asList(siteRules).stream()
                         .map(s -> s.site(site))
                         .collect(Collectors.toList()));
             }
@@ -156,12 +156,12 @@ public class Madalert {
         };
     }
     
-    public static SiteRule matchFirst(final SiteRule... siteRules) {
+    public static SiteRule matchAll(final SiteRule... siteRules) {
         return new SiteRule() {
 
             @Override
             Rule site(int site) {
-                return Rule.matchFirst(Arrays.asList(siteRules).stream()
+                return matchAll(Arrays.asList(siteRules).stream()
                         .map(s -> s.site(site))
                         .collect(Collectors.toList()));
             }
