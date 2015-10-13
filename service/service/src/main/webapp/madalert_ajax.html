@@ -63,8 +63,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1>Madalert Report</h1>
-                        <p>Mesh name: <span id="mesh_name"></span></p>
-                        <p>Mesh location: <span id="mesh_location"></span></p>
+                        <p>Mesh: <span id="mesh_name"></span></p>
+                        <p>JSON mesh data: <span id="mesh_data"></span></p>
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
@@ -198,10 +198,11 @@ function loadReport() {
         var sites_infrastructure_list = [];
         var sites_actual_list = [];
         $('#mesh_name').empty();
-        $('#mesh_location').empty();
-        $("<b>"+data["mesh"]["name"]+"</b>").appendTo('#mesh_name');
+        $('#mesh_data').empty();
+        $('<b><a href="http://' + selectedSite + '/maddash-webui/index.cgi?grid=' + selectedMesh +
+                '">'+data["mesh"]["name"]+'</a></b>').appendTo('#mesh_name');
         if (data["mesh"]["location"]) {
-            $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_location');
+            $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_data');
         }
 
         $.each(data.sites, function(key, val) {
