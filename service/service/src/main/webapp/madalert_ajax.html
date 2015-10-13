@@ -113,11 +113,21 @@
         <script type="text/javascript">
 var gridIndex;
 var selectedSite;
+var selectedMesh;
+
+function refreshDocumentLocation() {
+    if (selectedSite && selectedMesh) {
+        history.pushState(null, "", "madalert_ajax.html?site=" + selectedSite + "&mesh=" + selectedMesh);
+    } else if (selectedSite) {
+        history.pushState(null, "", "madalert_ajax.html?site=" + selectedSite);
+    }
+}
 
 $(".server-menu li a").click(function(){
     var selText = $(this).text();
     $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
     selectedSite = selText;
+    refreshDocumentLocation();
   
     $.ajax({
         url: '/madalert/resources/index?site=' + selText,
@@ -146,6 +156,8 @@ $(".server-menu li a").click(function(){
                     uri = "http://" + selectedSite + val.uri;
                 }
             });
+            selectedMesh = uri;
+            refreshDocumentLocation();
 
 
             $.ajax({
