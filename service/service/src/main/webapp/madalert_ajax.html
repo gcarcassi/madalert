@@ -55,8 +55,6 @@
                 </div>
                 <div class="btn-group"> <a class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a dashboard <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="dashboard-menu">
-                        <li><a href="#">This</a></li>
-                        <li><a href="#">That</a></li>
                     </ul>
                 </div>
             </div>
@@ -83,21 +81,14 @@
         <!-- Bootstrap -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script type="text/javascript">
+var gridIndex;
+var selectedSite;
+
 $(".server-menu li a").click(function(){
     var selText = $(this).text();
     $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+    selectedSite = selText;
   
-//    // Query the Dashboards
-//    $.getJSON('http://' + selText + '/maddash/grids?callback=?', function(data) {
-//        var items = [];
-//
-//        $.each(data.grids, function(key, val) {
-//            var s = '<li><a href="#">Grid</a></li>';
-//            items.push(s);
-//        });
-//
-//        $(items.join('')).appendTo('#dashboard-menu');
-//    });
     $.ajax({
         url: '/madalert/resources/index?site=' + selText,
         
@@ -113,10 +104,46 @@ $(".server-menu li a").click(function(){
 
         $('#dashboard-menu').empty();
         $(items.join('')).appendTo('#dashboard-menu');
+        gridIndex = data;
+        
+        $("#dashboard-menu li a").click(function(){
+            var selText = $(this).text();
+            $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+
+            var uri;
+            $.each(gridIndex.grids, function(key, val) {
+                if (val.name === selText) {
+                    uri = "http://" + selectedSite + val.uri;
+                }
+            });
+
+
+            $.ajax({
+                url: '/madalert/resources/report?json=' + uri,
+
+                crossDomain: true,
+                dataType: 'json'
+            }).done(function(data) {
+                alert("Done");
+        //        var items = [];
+        //
+        //        $.each(data.grids, function(key, val) {
+        //            var s = '<li><a href="#">' + val.name +'</a></li>';
+        //            items.push(s);
+        //        });
+        //
+        //        $('#dashboard-menu').empty();
+        //        $(items.join('')).appendTo('#dashboard-menu');
+            });
+
+
+        });
+        
     });
 
 
 });
-        </script>
+
+    </script>
     </body>
 </html>
