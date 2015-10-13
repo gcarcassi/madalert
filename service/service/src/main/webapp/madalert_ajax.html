@@ -47,14 +47,14 @@
         <div class="featurette gray">
         <form>
             <div class="well carousel-search hidden-sm">
-                <div class="btn-group"> <a class="btn btn-default dropdown-toggle btn-select" data-toggle="dropdown" href="#">Select a server <span class="caret"></span></a>
-                    <ul class="dropdown-menu server-menu">
+                <div class="btn-group"> <a id="selected_server" class="btn btn-default dropdown-toggle btn-select" data-toggle="dropdown" href="#">Select a server <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="server_menu">
                         <li><a href="#">maddash.aglt2.org</a></li>
                         <li><a href="#">psmad.grid.iu.edu</a></li>
                     </ul>
                 </div>
-                <div class="btn-group"> <a class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a dashboard <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="dashboard-menu">
+                <div class="btn-group"> <a id="selected_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a dashboard <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="dashboard_menu">
                     </ul>
                 </div>
             </div>
@@ -111,11 +111,50 @@
         <!-- Bootstrap -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script type="text/javascript">
-var gridIndex;
+// Application state
+// -----------------
+
+// The application state consists on the user selection of site and mesh.
+// These must be kept in synch with the URL.
+// I.e. User changes selection -> URL updated (without reload)
+//      User reloads (or changes the URL, or saves the link) -> the selection is restored
 var selectedSite;
 var selectedMesh;
 
-function refreshDocumentLocation() {
+// Cached data
+// -----------
+
+// This is part of the application state that can be reconstructre.
+// Consists on the list of meshes for a particular site.
+var gridIndex;
+
+function updateSelection(newSelectedSite, newSelectedMesh) {
+    selectedSite = newSelectedSite;
+    selectedMesh = newSelectedMesh;
+    updateDisplayedSelection();
+}
+
+function updateSite(newSelectedSite) {
+    selectedSite = newSelectedSite;
+    updateDisplayedSelection();
+}
+
+function updateMesh(newSelectedMesh) {
+    selectedMesh = newSelectedMesh;
+    updateDisplayedSelection();
+}
+
+function updateDisplayedSelection() {
+    if (selectedSite) {
+        $('#selected_server').html(selectedSite+' <span class="caret"></span>');
+    }
+    
+    if (selectedMesh) {
+        $('#selected_mesh').html(selectedMesh+' <span class="caret"></span>');
+    } else {
+        $('#selected_mesh').html('Select a dashboard <span class="caret"></span>');
+    }
+    
     if (selectedSite && selectedMesh) {
         history.pushState(null, "", "madalert_ajax.html?site=" + selectedSite + "&mesh=" + selectedMesh);
     } else if (selectedSite) {
@@ -123,14 +162,98 @@ function refreshDocumentLocation() {
     }
 }
 
-$(".server-menu li a").click(function(){
-    var selText = $(this).text();
-    $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
-    selectedSite = selText;
-    refreshDocumentLocation();
-  
+function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
+function restoreState() {
+    updateSelection(getURLParameter("site"), getURLParameter("mesh"));
+}
+
+// We have loaded the page, time to restore the selection
+restoreState();
+// If there is a selection, restore the UI to show it
+loadMeshData();
+
+function loadReport() {
+    var meshUri;
+    $.each(gridIndex.grids, function(key, val) {
+        if (val.name === selectedMesh) {
+            meshUri = "http://" + selectedSite + val.uri;
+        }
+    });
+    
+    if (!meshUri) {
+        updateMesh(null);
+        return;
+    }
+
+
     $.ajax({
-        url: '/madalert/resources/index?site=' + selText,
+        url: '/madalert/resources/report?json=' + meshUri,
+
+        crossDomain: true,
+        dataType: 'json'
+    }).done(function(data) {
+        var sites_infrastructure_list = [];
+        var sites_actual_list = [];
+        $('#mesh_name').empty();
+        $('#mesh_location').empty();
+        $("<b>"+data["mesh"]["name"]+"</b>").appendTo('#mesh_name');
+        if (data["mesh"]["location"]) {
+            $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_location');
+        }
+
+        $.each(data.sites, function(key, val) {
+            var infrastructure_problems;
+            var actual_problems;
+            if (val.problems) {
+                var infrastructure_message;
+                var actual_message;
+                val.problems.forEach(function(problem) {
+                    if (problem["category"] === "INFRASTRUCTURE") {
+                        if (infrastructure_message) {
+                            infrastructure_message += " | ";
+                        } else {
+                            infrastructure_message = "";
+                        }
+                        infrastructure_message += problem.name;
+                    }
+                    if (problem["category"] === "ACTUAL") {
+                        if (actual_message) {
+                            actual_message += " | ";
+                        } else {
+                            actual_message = "";
+                        }
+                        actual_message += problem.name;
+                    }
+                });
+                if (infrastructure_message) {
+                    infrastructure_problems = "<tr><td><b>" + key + "</b></td><td>" + infrastructure_message + "</td></tr>";
+                }
+                if (actual_message) {
+                    actual_problems = "<tr><td><b>" + key + "</b></td><td>" + actual_message + "</td></tr>";
+                }
+            }
+            if (infrastructure_problems) {
+                sites_infrastructure_list.push(infrastructure_problems);
+            }
+            if (actual_problems) {
+                sites_actual_list.push(actual_problems);
+            }
+        });
+
+        $('#infrastructure_problems').empty();
+        $('#actual_problems').empty();
+        $(sites_infrastructure_list.join('')).appendTo('#infrastructure_problems');
+        $(sites_actual_list.join('')).appendTo('#actual_problems');
+    });
+
+}
+
+function loadMeshData() {
+    $.ajax({
+        url: '/madalert/resources/index?site=' + selectedSite,
         
         crossDomain: true,
         dataType: 'json'
@@ -142,90 +265,24 @@ $(".server-menu li a").click(function(){
             items.push(s);
         });
 
-        $('#dashboard-menu').empty();
-        $(items.join('')).appendTo('#dashboard-menu');
+        $('#dashboard_menu').empty();
+        $(items.join('')).appendTo('#dashboard_menu');
         gridIndex = data;
         
-        $("#dashboard-menu li a").click(function(){
-            var selText = $(this).text();
-            $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
-
-            var uri;
-            $.each(gridIndex.grids, function(key, val) {
-                if (val.name === selText) {
-                    uri = "http://" + selectedSite + val.uri;
-                }
-            });
-            selectedMesh = uri;
-            refreshDocumentLocation();
-
-
-            $.ajax({
-                url: '/madalert/resources/report?json=' + uri,
-
-                crossDomain: true,
-                dataType: 'json'
-            }).done(function(data) {
-                var sites_infrastructure_list = [];
-                var sites_actual_list = [];
-                $('#mesh_name').empty();
-                $('#mesh_location').empty();
-                $("<b>"+data["mesh"]["name"]+"</b>").appendTo('#mesh_name');
-                if (data["mesh"]["location"]) {
-                    $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_location');
-                }
-
-                $.each(data.sites, function(key, val) {
-                    var infrastructure_problems;
-                    var actual_problems;
-                    if (val.problems) {
-                        var infrastructure_message;
-                        var actual_message;
-                        val.problems.forEach(function(problem) {
-                            if (problem["category"] === "INFRASTRUCTURE") {
-                                if (infrastructure_message) {
-                                    infrastructure_message += " | ";
-                                } else {
-                                    infrastructure_message = "";
-                                }
-                                infrastructure_message += problem.name;
-                            }
-                            if (problem["category"] === "ACTUAL") {
-                                if (actual_message) {
-                                    actual_message += " | ";
-                                } else {
-                                    actual_message = "";
-                                }
-                                actual_message += problem.name;
-                            }
-                        });
-                        if (infrastructure_message) {
-                            infrastructure_problems = "<tr><td><b>" + key + "</b></td><td>" + infrastructure_message + "</td></tr>";
-                        }
-                        if (actual_message) {
-                            actual_problems = "<tr><td><b>" + key + "</b></td><td>" + actual_message + "</td></tr>";
-                        }
-                    }
-                    if (infrastructure_problems) {
-                        sites_infrastructure_list.push(infrastructure_problems);
-                    }
-                    if (actual_problems) {
-                        sites_actual_list.push(actual_problems);
-                    }
-                });
-
-                $('#infrastructure_problems').empty();
-                $('#actual_problems').empty();
-                $(sites_infrastructure_list.join('')).appendTo('#infrastructure_problems');
-                $(sites_actual_list.join('')).appendTo('#actual_problems');
-            });
-
-
+        $("#dashboard_menu li a").click(function(){
+            updateMesh($(this).text());
+            loadReport();
         });
         
+        loadReport();
+        
     });
+}
 
-
+$("#server_menu li a").click(function(){
+    updateSite($(this).text());
+  
+    loadMeshData();
 });
 
     </script>
