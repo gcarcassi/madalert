@@ -63,12 +63,42 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1>Madalert Report</h1>
-                        <p>Madalert analyzes a mesh to find problematic patterns. Here are some examples:</p>
-                        <ul>
-                            <li><b>Latency tests between all WLCG hosts Dashboard (psmad.grid.iu.edu)</b>: <a href="http://psmad.grid.iu.edu/maddash-webui/index.cgi?dashboard=Latency%20tests%20between%20all%20WLCG%20hosts">Mesh</a> - <a href="http://maddash.aglt2.org/cgi-bin/report?json=http://psmad.grid.iu.edu/maddash/grids/OPN+Config+-+OWAMP+Test+Between+OPN+Latency+Hosts">Report</a></li>
-                            <li><b>Latency tests between all WLCG hosts Dashboard (maddash.aglt2.org)</b>: <a href="http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=Latency%20tests%20between%20all%20WLCG%20hosts">Mesh</a> - <a href="http://maddash.aglt2.org/cgi-bin/report?json=http://maddash.aglt2.org/maddash/grids/Latency+tests+between+all+WLCG+hosts+-+Latency+Tests+Between+WLCG+Latency+Hosts">Report</a></li>
-                            <li><b>USATLAS Mesh Config</b>: <a href="http://maddash.aglt2.org/maddash-webui/index.cgi?dashboard=USATLAS%20Mesh%20Config">Mesh</a> - <a href="http://maddash.aglt2.org/cgi-bin/report?json=http://maddash.aglt2.org/maddash/grids/USATLAS+Mesh+Config+-+USATLAS+Bandwidth+Mesh+Test">Report</a></li>
-                        </ul>
+                        <p>Mesh name: <span id="mesh_name"></span></p>
+                        <p>Mesh location: <span id="mesh_location"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><b>Infrastructure problems</b></h3>
+                            </div>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Site</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="infrastructure_problems">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><b>Test failures</b></h3>
+                            </div>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Site</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="actual_problems">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,16 +154,58 @@ $(".server-menu li a").click(function(){
                 crossDomain: true,
                 dataType: 'json'
             }).done(function(data) {
-                alert("Done");
-        //        var items = [];
-        //
-        //        $.each(data.grids, function(key, val) {
-        //            var s = '<li><a href="#">' + val.name +'</a></li>';
-        //            items.push(s);
-        //        });
-        //
-        //        $('#dashboard-menu').empty();
-        //        $(items.join('')).appendTo('#dashboard-menu');
+                var sites_infrastructure_list = [];
+                var sites_actual_list = [];
+                $('#mesh_name').empty();
+                $('#mesh_location').empty();
+                $("<b>"+data["mesh"]["name"]+"</b>").appendTo('#mesh_name');
+                if (data["mesh"]["location"]) {
+                    $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_location');
+                }
+
+                $.each(data.sites, function(key, val) {
+                    var infrastructure_problems;
+                    var actual_problems;
+                    if (val.problems) {
+                        var infrastructure_message;
+                        var actual_message;
+                        val.problems.forEach(function(problem) {
+                            if (problem["category"] === "INFRASTRUCTURE") {
+                                if (infrastructure_message) {
+                                    infrastructure_message += " | ";
+                                } else {
+                                    infrastructure_message = "";
+                                }
+                                infrastructure_message += problem.name;
+                            }
+                            if (problem["category"] === "ACTUAL") {
+                                if (actual_message) {
+                                    actual_message += " | ";
+                                } else {
+                                    actual_message = "";
+                                }
+                                actual_message += problem.name;
+                            }
+                        });
+                        if (infrastructure_message) {
+                            infrastructure_problems = "<tr><td><b>" + key + "</b></td><td>" + infrastructure_message + "</td></tr>";
+                        }
+                        if (actual_message) {
+                            actual_problems = "<tr><td><b>" + key + "</b></td><td>" + actual_message + "</td></tr>";
+                        }
+                    }
+                    if (infrastructure_problems) {
+                        sites_infrastructure_list.push(infrastructure_problems);
+                    }
+                    if (actual_problems) {
+                        sites_actual_list.push(actual_problems);
+                    }
+                });
+
+                $('#infrastructure_problems').empty();
+                $('#actual_problems').empty();
+                $(sites_infrastructure_list.join('')).appendTo('#infrastructure_problems');
+                $(sites_actual_list.join('')).appendTo('#actual_problems');
             });
 
 
