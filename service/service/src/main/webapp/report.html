@@ -156,11 +156,16 @@ function updateDisplayedSelection() {
     }
     
     if (selectedSite && selectedMesh) {
-        history.pushState(null, "", "report.html?site=" + selectedSite + "&mesh=" + selectedMesh);
+        history.replaceState(null, "", "report.html?site=" + selectedSite + "&mesh=" + selectedMesh);
     } else if (selectedSite) {
-        history.pushState(null, "", "report.html?site=" + selectedSite);
+        history.replaceState(null, "", "report.html?site=" + selectedSite);
     }
 }
+
+window.onpopstate = function(event) {
+    restoreState();
+    loadMeshData();
+};
 
 function getURLParameter(name) {
     return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
