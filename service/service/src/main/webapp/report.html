@@ -46,16 +46,21 @@
 
         <div class="featurette gray">
         <form>
-            <div class="well carousel-search hidden-sm">
-                <div class="btn-group"> <a id="selected_server" class="btn btn-default dropdown-toggle btn-select" data-toggle="dropdown" href="#">Select a server <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="server_menu">
-                        <li><a href="#">maddash.aglt2.org</a></li>
-                        <li><a href="#">psmad.grid.iu.edu</a></li>
-                    </ul>
-                </div>
-                <div class="btn-group"> <a id="selected_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a dashboard <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="dashboard_menu">
-                    </ul>
+            <div class="container">
+                <div class="row">
+                    <div class="well carousel-search col-sm-12">
+                        Server: &nbsp;<div class="btn-group"> <a id="selected_server" class="btn btn-default dropdown-toggle btn-select" data-toggle="dropdown" href="#">Select a server <span class="caret"></span></a>
+                            <ul class="dropdown-menu" id="server_menu">
+                                <li><a href="#">maddash.aglt2.org</a></li>
+                                <li><a href="#">psmad.grid.iu.edu</a></li>
+                            </ul>
+                        </div>
+                        &nbsp;&nbsp;
+                        Mesh: &nbsp;<div class="btn-group"> <a id="selected_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a mesh <span class="caret"></span></a>
+                            <ul class="dropdown-menu" id="dashboard_menu">
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>            
