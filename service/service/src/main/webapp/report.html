@@ -35,7 +35,7 @@
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a><i class="fa fa-check-square-o  fa-fw"></i>&nbsp; Report</a></li>
+                        <li><a href="http://maddash.aglt2.org/cgi-bin/report"><i class="fa fa-check-square-o  fa-fw"></i>&nbsp; Report</a></li>
                         <li><a href="https://github.com/gcarcassi/madalert"><i class="fa fa-github fa-fw"></i>&nbsp; GitHub</a></li>
                         <li><a href="https://github.com/gcarcassi/madalert/wiki"><i class="fa fa-book fa-fw"></i>&nbsp; Wiki</a></li>
                     </ul>
@@ -45,12 +45,26 @@
 
 
         <div class="featurette gray">
+        <form>
+            <div class="well carousel-search hidden-sm">
+                <div class="btn-group"> <a id="selected_server" class="btn btn-default dropdown-toggle btn-select" data-toggle="dropdown" href="#">Select a server <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="server_menu">
+                        <li><a href="#">maddash.aglt2.org</a></li>
+                        <li><a href="#">psmad.grid.iu.edu</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group"> <a id="selected_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a dashboard <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="dashboard_menu">
+                    </ul>
+                </div>
+            </div>
+        </form>            
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
                         <h1>Madalert Report</h1>
-                        <p>Mesh name: <span id="mesh_name"></span></p>
-                        <p>Mesh location: <span id="mesh_location"></span></p>
+                        <p>Mesh: <span id="mesh_name"></span></p>
+                        <p>JSON mesh data: <span id="mesh_data"></span></p>
                     </div>
                     <div class="col-md-6">
                         <div class="panel panel-primary">
@@ -97,24 +111,98 @@
         <!-- Bootstrap -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <script type="text/javascript">
+// Application state
+// -----------------
 
-function getURLParameter(name) {
-  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+// The application state consists on the user selection of site and mesh.
+// These must be kept in synch with the URL.
+// I.e. User changes selection -> URL updated (without reload)
+//      User reloads (or changes the URL, or saves the link) -> the selection is restored
+var selectedSite;
+var selectedMesh;
+
+// Cached data
+// -----------
+
+// This is part of the application state that can be reconstructre.
+// Consists on the list of meshes for a particular site.
+var gridIndex;
+
+function updateSelection(newSelectedSite, newSelectedMesh) {
+    selectedSite = newSelectedSite;
+    selectedMesh = newSelectedMesh;
+    updateDisplayedSelection();
 }
 
-    jQuery(document).ready(function() {
-    var selText = $(this).text();
+function updateSite(newSelectedSite) {
+    selectedSite = newSelectedSite;
+    updateDisplayedSelection();
+}
+
+function updateMesh(newSelectedMesh) {
+    selectedMesh = newSelectedMesh;
+    updateDisplayedSelection();
+}
+
+function updateDisplayedSelection() {
+    if (selectedSite) {
+        $('#selected_server').html(selectedSite+' <span class="caret"></span>');
+    }
+    
+    if (selectedMesh) {
+        $('#selected_mesh').html(selectedMesh+' <span class="caret"></span>');
+    } else {
+        $('#selected_mesh').html('Select a dashboard <span class="caret"></span>');
+    }
+    
+    if (selectedSite && selectedMesh) {
+        history.pushState(null, "", "report.html?site=" + selectedSite + "&mesh=" + selectedMesh);
+    } else if (selectedSite) {
+        history.pushState(null, "", "report.html?site=" + selectedSite);
+    }
+}
+
+function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
+function restoreState() {
+    updateSelection(getURLParameter("site"), getURLParameter("mesh"));
+}
+
+// We have loaded the page, time to restore the selection
+restoreState();
+// If there is a selection, restore the UI to show it
+loadMeshData();
+
+function loadReport() {
+    var meshUri;
+    $.each(gridIndex.grids, function(key, val) {
+        if (val.name === selectedMesh) {
+            meshUri = "http://" + selectedSite + val.uri;
+        }
+    });
+    
+    if (!meshUri) {
+        updateMesh(null);
+        return;
+    }
+
+
     $.ajax({
-        url: document.location.protocol + '//' + document.location.host + '/madalert/resources/report?json=' +getURLParameter("json"),
-        
+        url: '/madalert/resources/report?json=' + meshUri,
+
         crossDomain: true,
         dataType: 'json'
     }).done(function(data) {
         var sites_infrastructure_list = [];
         var sites_actual_list = [];
-        $("<b>"+data["mesh"]["name"]+"</b>").appendTo('#mesh_name');
+        $('#mesh_name').empty();
+        $('#mesh_data').empty();
+        $('<b><a href="http://' + selectedSite + '/maddash-webui/index.cgi?grid=' + selectedMesh +
+                '">'+data["mesh"]["name"]+'</a></b>').appendTo('#mesh_name');
         if (data["mesh"]["location"]) {
-            $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_location');
+            $('<a href="' + data["mesh"]["location"] + '">' + data["mesh"]["location"] + '</a>').appendTo('#mesh_data');
         }
 
         $.each(data.sites, function(key, val) {
@@ -156,12 +244,48 @@ function getURLParameter(name) {
             }
         });
 
+        $('#infrastructure_problems').empty();
+        $('#actual_problems').empty();
         $(sites_infrastructure_list.join('')).appendTo('#infrastructure_problems');
         $(sites_actual_list.join('')).appendTo('#actual_problems');
     });
 
+}
 
+function loadMeshData() {
+    $.ajax({
+        url: '/madalert/resources/index?site=' + selectedSite,
+        
+        crossDomain: true,
+        dataType: 'json'
+    }).done(function(data) {
+        var items = [];
+
+        $.each(data.grids, function(key, val) {
+            var s = '<li><a href="#">' + val.name +'</a></li>';
+            items.push(s);
+        });
+
+        $('#dashboard_menu').empty();
+        $(items.join('')).appendTo('#dashboard_menu');
+        gridIndex = data;
+        
+        $("#dashboard_menu li a").click(function(){
+            updateMesh($(this).text());
+            loadReport();
+        });
+        
+        loadReport();
+        
+    });
+}
+
+$("#server_menu li a").click(function(){
+    updateSite($(this).text());
+  
+    loadMeshData();
 });
-        </script>
+
+    </script>
     </body>
 </html>
