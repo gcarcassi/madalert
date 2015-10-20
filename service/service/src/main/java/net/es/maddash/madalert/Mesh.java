@@ -50,6 +50,10 @@ public class Mesh {
     public List<String> getSites() {
         return JsonUtil.toListString(jObj.getJsonArray("columnNames"));
     }
+    
+    public List<String> getStatusLabels() {
+        return JsonUtil.toListString(jObj.getJsonArray("statusLabels"));
+    }
 
     public String getLocation() {
         return meshLocation;
@@ -62,6 +66,10 @@ public class Mesh {
     public int nSeverityLevels() {
         // TODO: get it from the mesh
         return 4;
+    }
+    
+    public JsonObject toJson() {
+        return jObj;
     }
     
     public int statusFor(int row, int column, CellHalf half) {

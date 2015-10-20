@@ -30,6 +30,7 @@ public class RESTConfiguration extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(net.es.maddash.madalert.rest.CrossOriginResourceSharingFilter.class);
+        resources.add(net.es.maddash.madalert.rest.DiffResource.class);
         resources.add(net.es.maddash.madalert.rest.IndexResource.class);
         resources.add(net.es.maddash.madalert.rest.ReportResource.class);
     }
