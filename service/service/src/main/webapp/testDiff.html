@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <title>MaDDash - Monitoring and Debugging Dashboard</title>
+
+        <script src="http://maddash.aglt2.org/maddash-webui/lib/d3.v2.js"></script>
+        <script src="http://maddash.aglt2.org/maddash-webui/lib/jquery.min.js"></script>
+        <script src="http://maddash.aglt2.org/maddash-webui/lib/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="http://maddash.aglt2.org/maddash-webui/lib/jquery.tipsy.js"></script>                
+        <script type="text/javascript" src="http://maddash.aglt2.org/maddash-webui/lib/maddash.js"></script>
+
+        <link rel="stylesheet" href="http://maddash.aglt2.org/maddash-webui/style/maddash.css" media="screen">
+        <link rel="stylesheet" href="http://maddash.aglt2.org/maddash-webui/style/tipsy.css" />
+        <link rel="stylesheet" href="http://maddash.aglt2.org/maddash-webui/style/jquery.fancybox-1.3.4.css" />
+    </head>
+    <body class="claro" >
+        <h1>Diff demo</h1>
+        <p> Diff for "Bandwidth tests between all WLCG hosts - BWCTL Test Between WLCG Bandwidth Hosts" between psmad.grid.iu.edu and maddash.aglt2.org</p>
+        <div id="my_legend_div" class="legends"></div>
+        <div id="my_grid_div"></div>
+        <script>
+            var ds = new MaDDashDataSource("./resources/diff?mesh1=http://psmad.grid.iu.edu/maddash/grids/Bandwidth%20tests%20between%20all%20WLCG%20hosts%20-%20BWCTL%20Test%20Between%20WLCG%20Bandwidth%20Hosts&mesh2=http://maddash.aglt2.org/maddash/grids/Bandwidth%20tests%20between%20all%20WLCG%20hosts%20-%20BWCTL%20Test%20Between%20WLCG%20Bandwidth%20Hosts");
+            var mdGrid = new MaDDashGrid("my_grid_div", "my_legend_div");
+            ds.connect(mdGrid);
+            ds.render();
+        </script>
+
+    </body>
+</html>
