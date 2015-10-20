@@ -5,6 +5,7 @@
  */
 package net.es.maddash.madalert;
 
+import java.math.BigDecimal;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -39,35 +40,33 @@ public class MeshDiff {
         for (int row = 0; row < mesh1.getSites().size(); row++) {
             JsonArrayBuilder resultRow = Json.createArrayBuilder();
             for (int column = 0; column < mesh1.getSites().size(); column++) {
-                JsonArrayBuilder resultColumn = Json.createArrayBuilder();
                 if (row == column) {
-                    resultColumn.addNull();
+                    resultRow.addNull();
                 } else if (mesh1.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW)
                         == mesh2.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW)) {
-                    resultColumn.add(Json.createObjectBuilder().add("message", "No difference")
-                            .add("status", mesh1.getStatusLabels().size() - 1)
-                            .add("prevCheckTime", 0)
-                            .add("uri", ""));
-                    resultColumn.add(Json.createObjectBuilder().add("message", "No difference")
-                            .add("status", mesh1.getStatusLabels().size() - 1)
-                            .add("prevCheckTime", 0)
-                            .add("uri", ""));
+                    resultRow.add(Json.createArrayBuilder().add(Json.createObjectBuilder().add("message", "No difference")
+                                .add("status", mesh1.getStatusLabels().size() - 1)
+                                .add("prevCheckTime", 0)
+                                .add("uri", ""))
+                            .add(Json.createObjectBuilder().add("message", "No difference")
+                                .add("status", mesh1.getStatusLabels().size() - 1)
+                                .add("prevCheckTime", 0)
+                                .add("uri", "")));
                 } else {
-                    resultColumn.add(Json.createObjectBuilder().add("message", "Difference found")
-                            .add("status", mesh1.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW))
-                            .add("prevCheckTime", 0)
-                            .add("uri", ""));
-                    resultColumn.add(Json.createObjectBuilder().add("message", "Difference found")
-                            .add("status", mesh2.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW))
-                            .add("prevCheckTime", 0)
-                            .add("uri", ""));
+                    resultRow.add(Json.createArrayBuilder().add(Json.createObjectBuilder().add("message", "Difference found")
+                                .add("status", mesh1.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW))
+                                .add("prevCheckTime", 0)
+                                .add("uri", ""))
+                            .add(Json.createObjectBuilder().add("message", "Difference found")
+                                .add("status", mesh2.statusFor(row, column, Mesh.CellHalf.INITIATED_BY_ROW))
+                                .add("prevCheckTime", 0)
+                                .add("uri", "")));
                 }
-                resultRow.add(resultColumn);
             }
             resultGrid.add(resultRow);
         }
-        diffMesh.add("grids", resultGrid);
-        diffMesh.add("row", mesh1.toJson().getJsonArray("rows"));
+        diffMesh.add("grid", resultGrid);
+        diffMesh.add("rows", mesh1.toJson().getJsonArray("rows"));
         
         return Mesh.from(diffMesh.build());
     }
