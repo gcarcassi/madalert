@@ -18,7 +18,7 @@
         <h1>Diff demo</h1>
         <p> Diff for "Bandwidth tests between all WLCG hosts - BWCTL Test Between WLCG Bandwidth Hosts" between psmad.grid.iu.edu and maddash.aglt2.org</p>
         <div id="my_legend_div" class="legends"></div>
-        <div id="my_grid_div"></div>
+        <div id="my_grid_div" style="float: left; overflow: hidden; margin-right: 10px;"></div>
         <script>
             var ds = new MaDDashDataSource("./resources/diff?mesh1=http://psmad.grid.iu.edu/maddash/grids/Bandwidth%20tests%20between%20all%20WLCG%20hosts%20-%20BWCTL%20Test%20Between%20WLCG%20Bandwidth%20Hosts&mesh2=http://maddash.aglt2.org/maddash/grids/Bandwidth%20tests%20between%20all%20WLCG%20hosts%20-%20BWCTL%20Test%20Between%20WLCG%20Bandwidth%20Hosts");
             var mdGrid = new MaDDashGrid("my_grid_div", "my_legend_div");
