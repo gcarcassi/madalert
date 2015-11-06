@@ -273,7 +273,7 @@ function loadReport() {
     if (!meshUri || !diffMeshUri) {
         return;
     }
-    ds = new MaDDashDataSource("http://localhost:8080/madalert/resources/diff?mesh1=" + meshUri + "&mesh2=" + diffMeshUri);
+    ds = new MaDDashDataSource("./resources/diff?mesh1=" + meshUri + "&mesh2=" + diffMeshUri);
     ds.connect(mdGrid);
     ds.render();
 }
