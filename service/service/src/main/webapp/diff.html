@@ -308,7 +308,7 @@ function fillDiffMeshMenu(data) {
 
     $('#diff_mesh_menu').empty();
     $(items.join('')).appendTo('#diff_mesh_menu');
-    gridIndex = data;
+    gridDiffIndex = data;
 
     $("#diff_mesh_menu li a").click(function(){
         updateDiffMesh($(this).text());
@@ -330,6 +330,17 @@ function loadMeshData() {
             if (!selectedDiffSite) {
                 fillDiffMeshMenu(data);
             }
+        });
+    }
+    
+    if (selectedDiffSite && !gridDiffIndex) {
+        $.ajax({
+            url: '/madalert/resources/index?site=' + selectedDiffSite,
+
+            crossDomain: true,
+            dataType: 'json'
+        }).done(function(data) {
+            fillDiffMeshMenu(data);
         });
     }
 }
