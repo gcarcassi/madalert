@@ -50,7 +50,9 @@
 
 
         <div class="featurette gray">
-        <form class="form-inline well carousel-search container">
+        <!-- Fake target frame to retain the autocomplete without submission. -->
+        <iframe name="blank" style="display:none" src="about:blank"></iframe>
+        <form target="blank" id="form" class="form-inline well carousel-search container" action="about:blank">
             <div class="row">
                 <div class="col-sm-12">
                     <input class="form-control" id="selected_server" name="selected_server" type="text" placeholder="Site name">
@@ -362,6 +364,8 @@ document.getElementById('selected_server').addEventListener('change', function()
     updateSite($(this).val());
     gridIndex = null;
     loadMeshData();
+    // Fake submit the form to add element to auto-complete
+    document.getElementById('form').submit();
 });
 
 document.getElementById('selected_mesh').addEventListener('change', function(){
@@ -373,6 +377,8 @@ document.getElementById('selected_diff_server').addEventListener('change', funct
     updateDiffSite($(this).val());
     gridDiffIndex = null;
     loadMeshData();
+    // Fake submit the form to add element to auto-complete
+    document.getElementById('form').submit();
 });
 
 
