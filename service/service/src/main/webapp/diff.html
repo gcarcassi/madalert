@@ -53,23 +53,18 @@
         <form class="form-inline well carousel-search container">
             <div class="row">
                 <div class="col-sm-12">
-                    <input class="form-control" id="selected_server" name="selected_site" type="text" placeholder="Site name">
+                    <input class="form-control" id="selected_server" name="selected_server" type="text" placeholder="Site name">
                     <select class="form-control" id="selected_mesh" name="selected_mesh">
                     </select>
                     <a id="selected_mesh_link">Mesh</a>
                 </div>
             </div>
             <div class="row" style="margin-top:20px">
-                <div class="col-sm-4">
-                    <input id="selected_diff_server" type="text" class="form-control" placeholder="Site name">
-                </div>
-                <div class="col-sm-4">
-                    <div class="btn-group"> <a id="selected_diff_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a mesh <span class="caret"></span></a>
-                        <ul class="dropdown-menu" id="diff_mesh_menu">
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-sm-4">
+                <div class="col-sm-12">
+                    <input class="form-control" id="selected_diff_server" name="selected_diff_server" type="text" placeholder="Site name">
+                    <select class="form-control" id="selected_diff_mesh" name="selected_diff_mesh">
+                    </select>
+                    <a id="selected_diff_mesh_link">Mesh</a>
                 </div>
             </div>
         </form>            
@@ -170,17 +165,19 @@ function updateDisplayedSelection() {
     }
     
     if (selectedMesh) {
-            //       $('#selected_mesh').html(selectedMesh+' <span class="caret"></span>');
-        $('#selected_mesh_link').attr('href', "http://" + selectedSite + "/maddash-webui/index.cgi?grid=" + selectedMesh)
+        $('#selected_mesh_link').attr('href', "http://" + selectedSite + "/maddash-webui/index.cgi?grid=" + selectedMesh);
     } else {
-//        $('#selected_mesh').html('Select a dashboard <span class="caret"></span>');
-        $('#selected_mesh_link').attr('href', "")
+        $('#selected_mesh_link').attr('href', "");
     }
     
     if (selectedDiffMesh) {
-        $('#selected_diff_mesh').html(selectedDiffMesh+' <span class="caret"></span>');
+        if (selectedDiffSite) {
+            $('#selected_diff_mesh_link').attr('href', "http://" + selectedDiffSite + "/maddash-webui/index.cgi?grid=" + selectedDiffMesh);
+        } else {
+            $('#selected_diff_mesh_link').attr('href', "http://" + selectedSite + "/maddash-webui/index.cgi?grid=" + selectedDiffMesh);
+        }
     } else {
-        $('#selected_diff_mesh').html('Select a dashboard <span class="caret"></span>');
+        $('#selected_diff_mesh_link').attr('href', "");
     }
     
     var query = "";
@@ -267,6 +264,7 @@ function calcDiffMeshUri() {
     return uri;
 }
 var sourceUri;
+var lastRequested;
 function loadReport() {
     var meshUri = calcMeshUri();
     var diffMeshUri = calcDiffMeshUri();
@@ -274,7 +272,12 @@ function loadReport() {
     if (!meshUri || !diffMeshUri) {
         return;
     }
-    ds = new MaDDashDataSource("./resources/diff?mesh1=" + meshUri + "&mesh2=" + diffMeshUri);
+    var newRequest = "./resources/diff?mesh1=" + meshUri + "&mesh2=" + diffMeshUri;
+    if (newRequest === lastRequested) {
+        return;
+    }
+    lastRequested = newRequest;
+    ds = new MaDDashDataSource(newRequest);
     ds.connect(mdGrid);
     ds.render();
 }
@@ -313,18 +316,17 @@ function fillDiffMeshMenu(data) {
     var items = [];
 
     $.each(data.grids, function(key, val) {
-        var s = '<li><a href="#">' + val.name +'</a></li>';
+        var s = '<option>' + val.name +'</option>';
         items.push(s);
     });
 
-    $('#diff_mesh_menu').empty();
-    $(items.join('')).appendTo('#diff_mesh_menu');
+    $('#selected_diff_mesh').empty();
+    $(items.join('')).appendTo('#selected_diff_mesh');
     gridDiffIndex = data;
 
-    $("#diff_mesh_menu li a").click(function(){
-        updateDiffMesh($(this).text());
-        loadReport();
-    });
+    if (selectedDiffMesh) {
+        selectDropdown(document.getElementById('selected_diff_mesh'), selectedDiffMesh);
+    }
 
     loadReport();
 }
@@ -373,6 +375,11 @@ $("#selected_diff_server").on('change', function(){
     loadMeshData();
 });
 
+
+$("#selected_diff_mesh").on('change', function(){
+    updateDiffMesh($("#selected_diff_mesh option:selected").text());
+    loadReport();
+});
     </script>
     </body>
 </html>
