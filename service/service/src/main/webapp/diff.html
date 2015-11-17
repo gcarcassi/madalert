@@ -358,25 +358,25 @@ function loadMeshData() {
     }
 }
 
-$("#selected_server").on('change', function(){
+document.getElementById('selected_server').addEventListener('change', function(){
     updateSite($(this).val());
     gridIndex = null;
     loadMeshData();
 });
 
-$("#selected_mesh").on('change', function(){
+document.getElementById('selected_mesh').addEventListener('change', function(){
     updateMesh($("#selected_mesh option:selected").text());
     loadReport();
 });
 
-$("#selected_diff_server").on('change', function(){
+document.getElementById('selected_diff_server').addEventListener('change', function(){
     updateDiffSite($(this).val());
     gridDiffIndex = null;
     loadMeshData();
 });
 
 
-$("#selected_diff_mesh").on('change', function(){
+document.getElementById('selected_diff_mesh').addEventListener('change', function(){
     updateDiffMesh($("#selected_diff_mesh option:selected").text());
     loadReport();
 });
