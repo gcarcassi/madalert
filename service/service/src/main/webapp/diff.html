@@ -50,33 +50,26 @@
 
 
         <div class="featurette gray">
-        <form>
-            <div class="well carousel-search container">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <input id="selected_server" type="text" class="form-control" placeholder="Site name">
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="btn-group"> <a id="selected_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a mesh <span class="caret"></span></a>
-                            <ul class="dropdown-menu" id="mesh_menu">
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
+        <form class="form-inline well carousel-search container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <input class="form-control" id="selected_server" name="selected_site" type="text" placeholder="Site name">
+                    <select class="form-control" id="selected_mesh" name="selected_mesh">
+                    </select>
+                    <a id="selected_mesh_link">Mesh</a>
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px">
+                <div class="col-sm-4">
+                    <input id="selected_diff_server" type="text" class="form-control" placeholder="Site name">
+                </div>
+                <div class="col-sm-4">
+                    <div class="btn-group"> <a id="selected_diff_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a mesh <span class="caret"></span></a>
+                        <ul class="dropdown-menu" id="diff_mesh_menu">
+                        </ul>
                     </div>
                 </div>
-                <div class="row" style="margin-top:20px">
-                    <div class="col-sm-4">
-                        <input id="selected_diff_server" type="text" class="form-control" placeholder="Site name">
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="btn-group"> <a id="selected_diff_mesh" class="btn btn-default dropdown-toggle btn-select2" data-toggle="dropdown" href="#">Select a mesh <span class="caret"></span></a>
-                            <ul class="dropdown-menu" id="diff_mesh_menu">
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                    </div>
+                <div class="col-sm-4">
                 </div>
             </div>
         </form>            
@@ -177,9 +170,11 @@ function updateDisplayedSelection() {
     }
     
     if (selectedMesh) {
-        $('#selected_mesh').html(selectedMesh+' <span class="caret"></span>');
+            //       $('#selected_mesh').html(selectedMesh+' <span class="caret"></span>');
+        $('#selected_mesh_link').attr('href', "http://" + selectedSite + "/maddash-webui/index.cgi?grid=" + selectedMesh)
     } else {
-        $('#selected_mesh').html('Select a dashboard <span class="caret"></span>');
+//        $('#selected_mesh').html('Select a dashboard <span class="caret"></span>');
+        $('#selected_mesh_link').attr('href', "")
     }
     
     if (selectedDiffMesh) {
@@ -249,12 +244,18 @@ function calcDiffMeshUri() {
     }
     var grids;
     var uri;
+    if (selectedDiffSite) {
+        uri = "http://" + selectedDiffSite;
+    } else if (selectedSite) {
+        uri = "http://" + selectedSite;
+    } else {
+        return;
+    }
+    
     if (gridDiffIndex) {
         grids = gridDiffIndex.grids;
-        uri = "http://" + selectedDiffSite;
     } else if (gridIndex) {
         grids = gridIndex.grids;
-        uri = "http://" + selectedSite;
     } else {
         return;
     }
@@ -278,22 +279,32 @@ function loadReport() {
     ds.render();
 }
 
+function selectDropdown(dropdown, selectedText) {
+    if (dropdown.options) {
+        for (var i=0; i < dropdown.options.length; i++) {
+            if (dropdown.options[i].text === selectedText) {
+                dropdown.selectedIndex = i;
+                break;
+            }
+        }
+    }
+}
+
 function fillMeshMenu(data) {
     var items = [];
 
     $.each(data.grids, function(key, val) {
-        var s = '<li><a href="#">' + val.name +'</a></li>';
+        var s = '<option>' + val.name +'</option>';
         items.push(s);
     });
 
-    $('#mesh_menu').empty();
-    $(items.join('')).appendTo('#mesh_menu');
+    $('#selected_mesh').empty();
+    $(items.join('')).appendTo('#selected_mesh');
     gridIndex = data;
 
-    $("#mesh_menu li a").click(function(){
-        updateMesh($(this).text());
-        loadReport();
-    });
+    if (selectedMesh) {
+        selectDropdown(document.getElementById('selected_mesh'), selectedMesh);
+    }
 
     loadReport();
 }
@@ -349,6 +360,11 @@ $("#selected_server").on('change', function(){
     updateSite($(this).val());
     gridIndex = null;
     loadMeshData();
+});
+
+$("#selected_mesh").on('change', function(){
+    updateMesh($("#selected_mesh option:selected").text());
+    loadReport();
 });
 
 $("#selected_diff_server").on('change', function(){
